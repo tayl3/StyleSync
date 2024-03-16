@@ -1,0 +1,43 @@
+{
+  "coord": {
+    "lon": -89.4103,
+    "lat": 43.0723
+  },
+  "weather": [
+    {
+      "id": 804,
+      "main": "Clouds",
+      "description": "overcast clouds",
+      "icon": "04n"
+    }
+  ],
+  "base": "stations",
+  "main": {
+    "temp": 278.8,
+    "feels_like": 276.04,
+    "temp_min": 277.9,
+    "temp_max": 279.84,
+    "pressure": 993,
+    "humidity": 77
+  },
+  "visibility": 10000,
+  "wind": {
+    "speed": 3.6,
+    "deg": 210
+  },
+  "clouds": {
+    "all": 100
+  },
+  "dt": 1710589032,
+  "sys": {
+    "type": 2,
+    "id": 2032790,
+    "country": "US",
+    "sunrise": 1710590826,
+    "sunset": 1710633912
+  },
+  "timezone": -18000,
+  "id": 5261457,
+  "name": "Madison",
+  "cod": 200
+}
