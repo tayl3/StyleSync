@@ -8,6 +8,8 @@ import android.location.LocationManager;
 
 import androidx.core.app.ActivityCompat;
 
+import org.json.JSONObject;
+
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.InputStream;
@@ -15,15 +17,17 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-public class WeatherService {
-    private final Context context;
-    private final LocationManager locationManager;
-    private final String apiKey;
+import dev.stylesync.stylesync.MainActivity;
+import dev.stylesync.stylesync.data.DataCallback;
+import dev.stylesync.stylesync.data.WeatherData;
 
-    public WeatherService(Context context, String apiKey) {
+public class WeatherService {
+    private final MainActivity context;
+    private final LocationManager locationManager;
+
+    public WeatherService(MainActivity context) {
         this.context = context;
         this.locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
-        this.apiKey = apiKey;
     }
 
     private double[] getCoordinate() {
@@ -47,7 +51,7 @@ public class WeatherService {
         return null;
     }
 
-    public void getWeatherData(WeatherDataCallback callback) {
+    public void getData(DataCallback callback) {
         double[] coordinate = getCoordinate();
         if (coordinate == null){
             callback.onError("Location data unavailable");
@@ -58,7 +62,7 @@ public class WeatherService {
 
         new Thread(() -> {
             try {
-                URL url = new URL("https://api.openweathermap.org/data/2.5/weather?lat=" + latitude + "&lon=" + longitude + "&appid=" + apiKey);
+                URL url = new URL(MainActivity.WEATHER_API_URL + "?lat=" + latitude + "&lon=" + longitude + "&appid=" + MainActivity.WEATHER_API_KEY);
                 HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
                 try {
                     InputStream in = new BufferedInputStream(urlConnection.getInputStream());
@@ -68,7 +72,7 @@ public class WeatherService {
                     while ((line = reader.readLine()) != null) {
                         result.append(line);
                     }
-                    callback.onDataReceived(result.toString());
+                    callback.onDataReceived(parseWeatherData(result.toString()));
 
                 } finally {
                     urlConnection.disconnect();
@@ -79,8 +83,22 @@ public class WeatherService {
         }).start();
     }
 
-    public interface WeatherDataCallback {
-        void onDataReceived(String data);
-        void onError(String error);
+    // See https://openweathermap.org/current
+    private WeatherData parseWeatherData(String JSONData){
+        try {
+            JSONObject obj = new JSONObject(JSONData);
+            WeatherData data = new WeatherData();
+            data.temperature.temp = obj.getJSONObject("main").getDouble("temp");
+            data.temperature.temp_feels_like = obj.getJSONObject("main").getDouble("feels_like");
+            data.temperature.temp_min = obj.getJSONObject("main").getDouble("temp_min");
+            data.temperature.temp_max = obj.getJSONObject("main").getDouble("temp_max");
+            data.humidity = obj.getJSONObject("main").getDouble("humidity");
+            data.wind_speed = obj.getJSONObject("wind").getDouble("speed");
+            data.weather = obj.getJSONArray("weather").getJSONObject(0).getString("main");
+            return data;
+        } catch (Exception e){
+            System.err.println("Invalid weather JSON data: " + e);
+            return null;
+        }
     }
 }

@@ -2,8 +2,9 @@ package dev.stylesync.stylesync;
 
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.HandlerThread;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.navigation.NavController;
@@ -13,15 +14,24 @@ import androidx.navigation.ui.NavigationUI;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
+import dev.stylesync.stylesync.ai.AIService;
+import dev.stylesync.stylesync.data.PlanData;
 import dev.stylesync.stylesync.databinding.ActivityMainBinding;
-import dev.stylesync.stylesync.weather.WeatherService;
-import dev.stylesync.stylesync.weather.WeatherService.WeatherDataCallback;
 
 public class MainActivity extends AppCompatActivity {
-
-    private static final String WEATHER_API_KEY = "8474ee05487a0d67588216334a9cc992";
+ 
+    public static final String WEATHER_API_URL = "https://api.openweathermap.org/data/2.5/weather";
+    public static final String WEATHER_API_KEY = "8474ee05487a0d67588216334a9cc992";
+    public static final String CHATGPT_API_URL = "https://api.openai.com/v1/chat/completions";
+    public static final String CHATGPT_API_KEY = "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";
 
     private ActivityMainBinding binding;
+
+
+    private AIService aiService;
+    private Handler planHandler;
+    public PlanData planData;
+    public boolean planDataAvailable;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,24 +53,17 @@ public class MainActivity extends AppCompatActivity {
         // Request permission
         requestPermission();
 
-        // Weather service
-        WeatherService weatherService = new WeatherService(this, WEATHER_API_KEY);
+        // AI Service
+        aiService = new AIService(this);
 
-        // Callback when weather data available
-        WeatherDataCallback callback = new WeatherDataCallback(){
-            @Override
-            public void onDataReceived(String data) {
-                // JSON string, See https://openweathermap.org/current
-                System.out.println(data);
-            }
+        // Create plan handler to receive plan result
+        HandlerThread handlerThread = new HandlerThread("HandlerThread");
+        handlerThread.start();
+        planHandler = new Handler(handlerThread.getLooper());
+        planHandler.post(planRunnable);
 
-            @Override
-            public void onError(String error) {
-                System.err.println(error);
-            }
-        };
-        // Call Weather API
-        weatherService.getWeatherData(callback);
+        // Infer plan once
+        aiService.infer();
     }
 
     private void requestPermission(){
@@ -71,4 +74,15 @@ public class MainActivity extends AppCompatActivity {
                     "android.permission.ACCESS_COARSE_LOCATION"}, 0);
         }
     }
+
+    private final Runnable planRunnable = new Runnable() {
+        @Override
+        public void run() {
+            if (planDataAvailable){
+                System.out.println(planData);
+                planDataAvailable = false;
+            }
+            planHandler.postDelayed(this, 100);
+        }
+    };
 }

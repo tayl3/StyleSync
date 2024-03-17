@@ -1,43 +1,99 @@
 {
-  "coord": {
-    "lon": -89.4103,
-    "lat": 43.0723
+  "userData": {
+    "clothes": [
+      "White T-shirt",
+      "Black T-shirt",
+      "Blue T-shirt",
+      "Red T-shirt",
+      "Green T-shirt",
+      "Gray T-shirt",
+      "White Jeans",
+      "Blue Jeans",
+      "Black Jeans",
+      "Skinny Jeans",
+      "Bootcut Jeans",
+      "Ripped Jeans",
+      "Boxer Briefs",
+      "Briefs",
+      "Boxers",
+      "Thongs",
+      "Crew Socks",
+      "Ankle Socks",
+      "Dress Socks",
+      "No-show Socks",
+      "White Sneakers",
+      "Black Sneakers",
+      "Blue Sneakers",
+      "Red Sneakers",
+      "Running Shoes",
+      "Canvas Shoes",
+      "Leather Jacket",
+      "Denim Jacket",
+      "Bomber Jacket",
+      "Puffer Jacket",
+      "Hooded Sweatshirt",
+      "Crewneck Sweatshirt",
+      "V-neck Sweater",
+      "Cable-knit Sweater",
+      "Cashmere Sweater",
+      "Chinos",
+      "Khakis",
+      "Corduroy Pants",
+      "Cargo Pants",
+      "Track Pants",
+      "Wrap Dress",
+      "Shift Dress",
+      "Maxi Dress",
+      "A-line Skirt",
+      "Pencil Skirt",
+      "Denim Skirt",
+      "Silk Blouse",
+      "Button-up Blouse",
+      "Printed Blouse",
+      "Leather Belt",
+      "Fabric Belt",
+      "Braided Belt",
+      "Fedora Hat",
+      "Beanie Hat",
+      "Bucket Hat",
+      "Wide-brim Hat",
+      "Knit Scarf",
+      "Silk Scarf",
+      "Wool Scarf",
+      "Leather Gloves",
+      "Knit Gloves",
+      "Touchscreen Gloves",
+      "Digital Watch",
+      "Analog Watch",
+      "Smart Watch",
+      "Stud Earrings",
+      "Hoop Earrings",
+      "Dangle Earrings",
+      "Leather Bracelet",
+      "Beaded Bracelet",
+      "Chain Bracelet",
+      "Aviator Sunglasses",
+      "Wayfarer Sunglasses",
+      "Round Sunglasses",
+      "Cat-eye Sunglasses"
+    ],
+    "favorite_colors": [
+      "red",
+      "blue"
+    ],
+    "schedules": [
+      "business conference"
+    ]
   },
-  "weather": [
-    {
-      "id": 804,
-      "main": "Clouds",
-      "description": "overcast clouds",
-      "icon": "04n"
-    }
-  ],
-  "base": "stations",
-  "main": {
-    "temp": 278.8,
-    "feels_like": 276.04,
-    "temp_min": 277.9,
-    "temp_max": 279.84,
-    "pressure": 993,
-    "humidity": 77
-  },
-  "visibility": 10000,
-  "wind": {
-    "speed": 3.6,
-    "deg": 210
-  },
-  "clouds": {
-    "all": 100
-  },
-  "dt": 1710589032,
-  "sys": {
-    "type": 2,
-    "id": 2032790,
-    "country": "US",
-    "sunrise": 1710590826,
-    "sunset": 1710633912
-  },
-  "timezone": -18000,
-  "id": 5261457,
-  "name": "Madison",
-  "cod": 200
+  "weatherData": {
+    "humidity": 80.0,
+    "temperature": {
+      "temp": 281.56,
+      "temp_feels_like": 280.44,
+      "temp_max": 284.84,
+      "temp_min": 279.57
+    },
+    "weather": "Clear",
+    "wind_speed": 2.06
+  }
 }
