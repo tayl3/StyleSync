@@ -16,10 +16,11 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import dev.stylesync.stylesync.ai.AIService;
 import dev.stylesync.stylesync.data.PlanData;
+import dev.stylesync.stylesync.database.Database;
 import dev.stylesync.stylesync.databinding.ActivityMainBinding;
 
 public class MainActivity extends AppCompatActivity {
- 
+
     public static final String WEATHER_API_URL = "https://api.openweathermap.org/data/2.5/weather";
     public static final String WEATHER_API_KEY = "8474ee05487a0d67588216334a9cc992";
     public static final String CHATGPT_API_URL = "https://api.openai.com/v1/chat/completions";
@@ -27,8 +28,8 @@ public class MainActivity extends AppCompatActivity {
 
     private ActivityMainBinding binding;
 
-
     private AIService aiService;
+    public Database database;
     private Handler planHandler;
     public PlanData planData;
     public boolean planDataAvailable;
@@ -53,6 +54,9 @@ public class MainActivity extends AppCompatActivity {
         // Request permission
         requestPermission();
 
+        // Database
+        database = new Database();
+
         // AI Service
         aiService = new AIService(this);
 
@@ -66,7 +70,7 @@ public class MainActivity extends AppCompatActivity {
         aiService.infer();
     }
 
-    private void requestPermission(){
+    private void requestPermission() {
         // Location
         if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{
@@ -78,7 +82,7 @@ public class MainActivity extends AppCompatActivity {
     private final Runnable planRunnable = new Runnable() {
         @Override
         public void run() {
-            if (planDataAvailable){
+            if (planDataAvailable) {
                 System.out.println(planData);
                 planDataAvailable = false;
             }

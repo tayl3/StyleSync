@@ -48,7 +48,7 @@ public class AIService {
             }
         };
 
-        this.userDataService = new UserDataService();
+        this.userDataService = new UserDataService(context);
         this.userDataCallback = new DataCallback() {
             @Override
             public void onDataReceived(Data data) {
