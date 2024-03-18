@@ -1,4 +1,4 @@
-package dev.stylesync.stylesync.database;
+package dev.stylesync.stylesync.utility;
 
 import java.sql.Array;
 import java.sql.Connection;
@@ -8,6 +8,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Arrays;
 
 import dev.stylesync.stylesync.data.UserData;
 
@@ -17,6 +18,7 @@ public class Database {
     private final String user = "postgres";
     private final String pass = "";
     private final String database = "stylesync";
+    private final String userDataTable = "userdata";
     private String url = "jdbc:postgresql://%s:%d/";
     private Connection conn;
     private boolean status;
@@ -73,20 +75,20 @@ public class Database {
     }
 
     private void checkAndCreateTable() {
-        String sql = "CREATE TABLE userdata (id SERIAL PRIMARY KEY, clothes TEXT[], favorite_colors TEXT[], schedules TEXT[])";
+        String sql = "CREATE TABLE " + userDataTable + " (id SERIAL PRIMARY KEY, clothes TEXT[], favorite_colors TEXT[], schedules TEXT[])";
 
         try {
             DatabaseMetaData dbm = conn.getMetaData();
             // Check if "userdata" table exists
-            try (ResultSet tables = dbm.getTables(null, null, "userdata", null)) {
+            try (ResultSet tables = dbm.getTables(null, null, userDataTable, null)) {
                 if (tables.next()) {
                     // Table exists
-                    System.out.println("Table 'userdata' exists.");
+                    System.out.println("Table '" + userDataTable + "' exists.");
                 } else {
                     // Table does not exist
                     try (Statement stmt = conn.createStatement()) {
                         stmt.execute(sql);
-                        System.out.println("Table 'userdata' has been created.");
+                        System.out.println("Table '" + userDataTable + "' has been created.");
                     }
                 }
             }
@@ -96,16 +98,16 @@ public class Database {
     }
 
     public void setUserData(UserData userData) {
-        String sql = "INSERT INTO userdata (id, clothes, favorite_colors, schedules) VALUES (1, ?, ?, ?) " +
+        String sql = "INSERT INTO " + userDataTable + " (id, clothes, favorite_colors, schedules) VALUES (1, ?, ?, ?) " +
                 "ON CONFLICT (id) DO UPDATE SET clothes = EXCLUDED.clothes, favorite_colors = EXCLUDED.favorite_colors, schedules = EXCLUDED.schedules";
 
         Thread thread = new Thread(() -> {
             try {
                 PreparedStatement stmt = conn.prepareStatement(sql);
 
-                Array clothesArray = conn.createArrayOf("text", userData.clothes);
-                Array colorsArray = conn.createArrayOf("text", userData.userPreference.favorite_colors);
-                Array schedulesArray = conn.createArrayOf("text", userData.userPreference.schedules);
+                Array clothesArray = conn.createArrayOf("text", userData.clothes.toArray());
+                Array colorsArray = conn.createArrayOf("text", userData.userPreference.favorite_colors.toArray());
+                Array schedulesArray = conn.createArrayOf("text", userData.userPreference.schedules.toArray());
 
                 stmt.setArray(1, clothesArray);
                 stmt.setArray(2, colorsArray);
@@ -126,7 +128,7 @@ public class Database {
     }
 
     public UserData getUserData() {
-        String sql = "SELECT clothes, favorite_colors, schedules FROM userdata WHERE id = 1";
+        String sql = "SELECT clothes, favorite_colors, schedules FROM " + userDataTable + " WHERE id = 1";
 
         Thread thread = new Thread(() -> {
             UserData userData = new UserData();
@@ -139,11 +141,12 @@ public class Database {
                     Array colorsArray = rs.getArray("favorite_colors");
                     Array schedulesArray = rs.getArray("schedules");
 
-                    if (clothesArray != null) userData.clothes = (String[]) clothesArray.getArray();
+                    if (clothesArray != null)
+                        userData.clothes = Arrays.asList((String[]) clothesArray.getArray());
                     if (colorsArray != null)
-                        userData.userPreference.favorite_colors = (String[]) colorsArray.getArray();
+                        userData.userPreference.favorite_colors = Arrays.asList((String[]) colorsArray.getArray());
                     if (schedulesArray != null)
-                        userData.userPreference.schedules = (String[]) schedulesArray.getArray();
+                        userData.userPreference.schedules = Arrays.asList((String[]) schedulesArray.getArray());
                 }
                 this.userData = userData;
             } catch (Exception e) {
@@ -161,7 +164,7 @@ public class Database {
         return userData;
     }
 
-    public void dropDatabase() {
+    public void dropDatabase(String database) {
         String sql = "DROP DATABASE IF EXISTS " + database;
 
         try (Connection conn = DriverManager.getConnection(url + "postgres", user, pass);
@@ -173,13 +176,13 @@ public class Database {
         }
     }
 
-    public void dropTable() {
-        String sql = "DROP TABLE IF EXISTS userdata";
+    public void dropTable(String table) {
+        String sql = "DROP TABLE IF EXISTS " + table;
 
         try {
             Statement stmt = conn.createStatement();
             stmt.execute(sql);
-            System.out.println("Table 'userdata' has been dropped.");
+            System.out.println("Table '" + table + "' has been dropped.");
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -187,85 +190,60 @@ public class Database {
 
     private void initSampleUserData() {
         UserData userData = new UserData();
-        userData.userPreference.favorite_colors = new String[]{"red", "blue"};
-        userData.userPreference.schedules = new String[]{"business conference"};
-        userData.clothes = new String[]{
-                "White T-shirt",
-                "Black T-shirt",
-                "Blue T-shirt",
+        userData.userPreference.favorite_colors = Arrays.asList("red", "blue");
+        userData.userPreference.schedules = Arrays.asList("hiking");
+        userData.clothes = Arrays.asList(
                 "Red T-shirt",
-                "Green T-shirt",
-                "Gray T-shirt",
-                "White Jeans",
                 "Blue Jeans",
-                "Black Jeans",
-                "Skinny Jeans",
-                "Bootcut Jeans",
-                "Ripped Jeans",
-                "Boxer Briefs",
-                "Briefs",
-                "Boxers",
-                "Thongs",
-                "Crew Socks",
-                "Ankle Socks",
-                "Dress Socks",
-                "No-show Socks",
+                "Black Dress",
                 "White Sneakers",
-                "Black Sneakers",
-                "Blue Sneakers",
-                "Red Sneakers",
-                "Running Shoes",
-                "Canvas Shoes",
-                "Leather Jacket",
+                "Gray Hoodie",
+                "Brown Leather Jacket",
+                "Black Ankle Boots",
+                "Green Cargo Pants",
+                "Navy Blazer",
+                "Striped Sweater",
+                "Khaki Trousers",
                 "Denim Jacket",
-                "Bomber Jacket",
-                "Puffer Jacket",
-                "Hooded Sweatshirt",
-                "Crewneck Sweatshirt",
-                "V-neck Sweater",
-                "Cable-knit Sweater",
-                "Cashmere Sweater",
-                "Chinos",
-                "Khakis",
-                "Corduroy Pants",
-                "Cargo Pants",
-                "Track Pants",
-                "Wrap Dress",
-                "Shift Dress",
-                "Maxi Dress",
-                "A-line Skirt",
-                "Pencil Skirt",
-                "Denim Skirt",
-                "Silk Blouse",
-                "Button-up Blouse",
-                "Printed Blouse",
+                "Plaid Shirt",
+                "Beige Scarf",
                 "Leather Belt",
-                "Fabric Belt",
-                "Braided Belt",
-                "Fedora Hat",
+                "White Button-down Shirt",
+                "Black Leggings",
+                "Yellow Raincoat",
+                "Wool Coat",
+                "Silk Tie",
+                "Sports Cap",
+                "Running Shoes",
+                "Suede Gloves",
+                "Linen Shorts",
+                "Floral Dress",
+                "Bikini Swimwear",
+                "Cashmere Scarf",
+                "Sunglasses",
+                "Canvas Backpack",
+                "Gold Necklace",
+                "Silver Earrings",
+                "Watch",
+                "Purple Cardigan",
+                "Orange Polo Shirt",
+                "Pink Tank Top",
+                "High Heels",
+                "Flip Flops",
+                "Black Tuxedo",
+                "Bow Tie",
+                "Cufflinks",
+                "Pajama Set",
+                "Bathrobe",
                 "Beanie Hat",
-                "Bucket Hat",
-                "Wide-brim Hat",
-                "Knit Scarf",
-                "Silk Scarf",
-                "Wool Scarf",
-                "Leather Gloves",
-                "Knit Gloves",
-                "Touchscreen Gloves",
-                "Digital Watch",
-                "Analog Watch",
-                "Smart Watch",
-                "Stud Earrings",
-                "Hoop Earrings",
-                "Dangle Earrings",
-                "Leather Bracelet",
-                "Beaded Bracelet",
-                "Chain Bracelet",
-                "Aviator Sunglasses",
-                "Wayfarer Sunglasses",
-                "Round Sunglasses",
-                "Cat-eye Sunglasses"
-        };
+                "Winter Boots",
+                "Gym Shorts",
+                "Yoga Pants",
+                "Compression Shirt",
+                "Sports Bra",
+                "Cycling Jersey",
+                "Hiking Boots"
+        );
         setUserData(userData);
     }
 }

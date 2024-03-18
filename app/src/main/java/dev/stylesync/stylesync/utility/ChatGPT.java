@@ -1,4 +1,4 @@
-package dev.stylesync.stylesync.ai;
+package dev.stylesync.stylesync.utility;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -71,7 +71,7 @@ public class ChatGPT {
         }
     }
 
-    private static String parseResponse(String response){
+    private static String parseResponse(String response) {
         JSONObject jsonObj;
         try {
             jsonObj = new JSONObject(response);

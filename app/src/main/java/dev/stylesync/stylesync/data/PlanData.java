@@ -2,7 +2,7 @@ package dev.stylesync.stylesync.data;
 
 import java.util.Arrays;
 
-public class PlanData implements Data{
+public class PlanData implements Data {
     public String[] plan1;
     public String[] plan2;
     public String[] plan3;

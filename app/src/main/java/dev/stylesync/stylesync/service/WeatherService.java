@@ -1,4 +1,4 @@
-package dev.stylesync.stylesync.weather;
+package dev.stylesync.stylesync.service;
 
 import android.Manifest;
 import android.content.Context;
@@ -20,7 +20,7 @@ import java.net.URL;
 import dev.stylesync.stylesync.MainActivity;
 import dev.stylesync.stylesync.data.WeatherData;
 
-public class WeatherService {
+public class WeatherService implements Service {
     private final MainActivity context;
     private final LocationManager locationManager;
     private WeatherData weatherData;
@@ -54,7 +54,7 @@ public class WeatherService {
     public WeatherData getData() {
         Thread thread = new Thread(() -> {
             double[] coordinate = getCoordinate();
-            if (coordinate == null){
+            if (coordinate == null) {
                 System.err.println("Location data unavailable");
                 weatherData = null;
                 return;
@@ -91,7 +91,7 @@ public class WeatherService {
 
 
     // See https://openweathermap.org/current
-    private WeatherData parseWeatherData(String JSONData){
+    private WeatherData parseWeatherData(String JSONData) {
         try {
             JSONObject obj = new JSONObject(JSONData);
             WeatherData data = new WeatherData();
@@ -103,7 +103,7 @@ public class WeatherService {
             data.wind_speed = obj.getJSONObject("wind").getDouble("speed");
             data.weather = obj.getJSONArray("weather").getJSONObject(0).getString("main");
             return data;
-        } catch (Exception e){
+        } catch (Exception e) {
             System.err.println("Invalid weather JSON data: " + e);
             return null;
         }

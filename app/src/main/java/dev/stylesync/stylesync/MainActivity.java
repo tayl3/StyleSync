@@ -2,8 +2,6 @@ package dev.stylesync.stylesync;
 
 import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.HandlerThread;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
@@ -14,10 +12,13 @@ import androidx.navigation.ui.NavigationUI;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
-import dev.stylesync.stylesync.ai.AIService;
-import dev.stylesync.stylesync.data.PlanData;
-import dev.stylesync.stylesync.database.Database;
+import dev.stylesync.stylesync.data.Data;
+import dev.stylesync.stylesync.data.DataCallback;
 import dev.stylesync.stylesync.databinding.ActivityMainBinding;
+import dev.stylesync.stylesync.service.AIService;
+import dev.stylesync.stylesync.service.UserDataService;
+import dev.stylesync.stylesync.service.WeatherService;
+import dev.stylesync.stylesync.utility.Database;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -28,11 +29,13 @@ public class MainActivity extends AppCompatActivity {
 
     private ActivityMainBinding binding;
 
-    private AIService aiService;
+    // Services
+    public AIService aiService;
+    public WeatherService weatherService;
+    public UserDataService userDataService;
+
     public Database database;
-    private Handler planHandler;
-    public PlanData planData;
-    public boolean planDataAvailable;
+    private DataCallback planCallback;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,17 +60,26 @@ public class MainActivity extends AppCompatActivity {
         // Database
         database = new Database();
 
-        // AI Service
+        // Services
         aiService = new AIService(this);
+        weatherService = new WeatherService(this);
+        userDataService = new UserDataService(this);
 
-        // Create plan handler to receive plan result
-        HandlerThread handlerThread = new HandlerThread("HandlerThread");
-        handlerThread.start();
-        planHandler = new Handler(handlerThread.getLooper());
-        planHandler.post(planRunnable);
+        // Callback function after receiving plan
+        planCallback = new DataCallback() {
+            @Override
+            public void OnDataReceived(Data data) {
+                System.out.println(data);
+            }
+
+            @Override
+            public void OnError(String msg) {
+                System.err.println(msg);
+            }
+        };
 
         // Infer plan once
-        aiService.infer();
+        aiService.generatePlan(planCallback);
     }
 
     private void requestPermission() {
@@ -78,15 +90,4 @@ public class MainActivity extends AppCompatActivity {
                     "android.permission.ACCESS_COARSE_LOCATION"}, 0);
         }
     }
-
-    private final Runnable planRunnable = new Runnable() {
-        @Override
-        public void run() {
-            if (planDataAvailable) {
-                System.out.println(planData);
-                planDataAvailable = false;
-            }
-            planHandler.postDelayed(this, 100);
-        }
-    };
 }
