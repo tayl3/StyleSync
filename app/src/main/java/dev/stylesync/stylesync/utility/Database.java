@@ -1,7 +1,5 @@
 package dev.stylesync.stylesync.utility;
 
-import android.os.Build;
-
 import java.sql.Array;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -44,7 +42,6 @@ public class Database {
                 status = true;
             } catch (Exception e) {
                 status = false;
-                System.out.print(e.getMessage());
                 e.printStackTrace();
             }
         });
@@ -62,7 +59,6 @@ public class Database {
             System.out.println("Database '" + database + "' exists.");
         } catch (SQLException e) {
             createDatabase();
-            System.out.println("Database '" + database + "' has been created.");
         }
     }
 
@@ -72,6 +68,7 @@ public class Database {
         try (Connection conn = DriverManager.getConnection(url + "postgres", user, pass);
              Statement stmt = conn.createStatement()) {
             stmt.executeUpdate(sql);
+            System.out.println("Database '" + database + "' has been created.");
         } catch (SQLException e) {
             e.printStackTrace();
         }
