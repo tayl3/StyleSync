@@ -1,20 +1,18 @@
 package dev.stylesync.stylesync.database;
 
 import dev.stylesync.stylesync.MainActivity;
-import dev.stylesync.stylesync.data.DataCallback;
 import dev.stylesync.stylesync.data.UserData;
 
 public class UserDataService {
     private final MainActivity context;
+    private final Database database;
 
     public UserDataService(MainActivity context) {
         this.context = context;
+        this.database = context.database;
     }
 
-    public void getData(DataCallback callback) {
-        new Thread(() -> {
-            UserData userData = context.database.getUserData();
-            callback.onDataReceived(userData);
-        }).start();
+    public UserData getData() {
+        return database.getUserData();
     }
 }

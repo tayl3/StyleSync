@@ -20,6 +20,7 @@ public class Database {
     private String url = "jdbc:postgresql://%s:%d/";
     private Connection conn;
     private boolean status;
+    private UserData userData;
 
     public Database() {
         this.url = String.format(this.url, this.host, this.port);
@@ -98,44 +99,63 @@ public class Database {
         String sql = "INSERT INTO userdata (id, clothes, favorite_colors, schedules) VALUES (1, ?, ?, ?) " +
                 "ON CONFLICT (id) DO UPDATE SET clothes = EXCLUDED.clothes, favorite_colors = EXCLUDED.favorite_colors, schedules = EXCLUDED.schedules";
 
+        Thread thread = new Thread(() -> {
+            try {
+                PreparedStatement stmt = conn.prepareStatement(sql);
+
+                Array clothesArray = conn.createArrayOf("text", userData.clothes);
+                Array colorsArray = conn.createArrayOf("text", userData.userPreference.favorite_colors);
+                Array schedulesArray = conn.createArrayOf("text", userData.userPreference.schedules);
+
+                stmt.setArray(1, clothesArray);
+                stmt.setArray(2, colorsArray);
+                stmt.setArray(3, schedulesArray);
+
+                stmt.executeUpdate();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        });
+        thread.start();
         try {
-            PreparedStatement stmt = conn.prepareStatement(sql);
-
-            Array clothesArray = conn.createArrayOf("text", userData.clothes);
-            Array colorsArray = conn.createArrayOf("text", userData.userPreference.favorite_colors);
-            Array schedulesArray = conn.createArrayOf("text", userData.userPreference.schedules);
-
-            stmt.setArray(1, clothesArray);
-            stmt.setArray(2, colorsArray);
-            stmt.setArray(3, schedulesArray);
-
-            stmt.executeUpdate();
-        } catch (SQLException e) {
+            thread.join();
+        } catch (InterruptedException e) {
             e.printStackTrace();
+            Thread.currentThread().interrupt();
         }
     }
 
     public UserData getUserData() {
         String sql = "SELECT clothes, favorite_colors, schedules FROM userdata WHERE id = 1";
 
-        UserData userData = new UserData();
-        try {
-            PreparedStatement stmt = conn.prepareStatement(sql);
-            ResultSet rs = stmt.executeQuery();
+        Thread thread = new Thread(() -> {
+            UserData userData = new UserData();
+            try {
+                PreparedStatement stmt = conn.prepareStatement(sql);
+                ResultSet rs = stmt.executeQuery();
 
-            if (rs.next()) {
-                Array clothesArray = rs.getArray("clothes");
-                Array colorsArray = rs.getArray("favorite_colors");
-                Array schedulesArray = rs.getArray("schedules");
+                if (rs.next()) {
+                    Array clothesArray = rs.getArray("clothes");
+                    Array colorsArray = rs.getArray("favorite_colors");
+                    Array schedulesArray = rs.getArray("schedules");
 
-                if (clothesArray != null) userData.clothes = (String[]) clothesArray.getArray();
-                if (colorsArray != null)
-                    userData.userPreference.favorite_colors = (String[]) colorsArray.getArray();
-                if (schedulesArray != null)
-                    userData.userPreference.schedules = (String[]) schedulesArray.getArray();
+                    if (clothesArray != null) userData.clothes = (String[]) clothesArray.getArray();
+                    if (colorsArray != null)
+                        userData.userPreference.favorite_colors = (String[]) colorsArray.getArray();
+                    if (schedulesArray != null)
+                        userData.userPreference.schedules = (String[]) schedulesArray.getArray();
+                }
+                this.userData = userData;
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-        } catch (Exception e) {
+        });
+        thread.start();
+        try {
+            thread.join();
+        } catch (InterruptedException e) {
             e.printStackTrace();
+            Thread.currentThread().interrupt();
         }
 
         return userData;

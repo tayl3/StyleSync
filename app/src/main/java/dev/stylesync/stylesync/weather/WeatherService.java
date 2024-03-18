@@ -18,12 +18,12 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 import dev.stylesync.stylesync.MainActivity;
-import dev.stylesync.stylesync.data.DataCallback;
 import dev.stylesync.stylesync.data.WeatherData;
 
 public class WeatherService {
     private final MainActivity context;
     private final LocationManager locationManager;
+    private WeatherData weatherData;
 
     public WeatherService(MainActivity context) {
         this.context = context;
@@ -51,37 +51,44 @@ public class WeatherService {
         return null;
     }
 
-    public void getData(DataCallback callback) {
-        double[] coordinate = getCoordinate();
-        if (coordinate == null){
-            callback.onError("Location data unavailable");
-            return;
-        }
-        double latitude = coordinate[0];
-        double longitude = coordinate[1];
+    public WeatherData getData() {
+        Thread thread = new Thread(() -> {
+            double[] coordinate = getCoordinate();
+            if (coordinate == null){
+                System.err.println("Location data unavailable");
+                weatherData = null;
+                return;
+            }
+            double latitude = coordinate[0];
+            double longitude = coordinate[1];
 
-        new Thread(() -> {
             try {
                 URL url = new URL(MainActivity.WEATHER_API_URL + "?lat=" + latitude + "&lon=" + longitude + "&appid=" + MainActivity.WEATHER_API_KEY);
                 HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
-                try {
-                    InputStream in = new BufferedInputStream(urlConnection.getInputStream());
-                    BufferedReader reader = new BufferedReader(new InputStreamReader(in));
-                    StringBuilder result = new StringBuilder();
-                    String line;
-                    while ((line = reader.readLine()) != null) {
-                        result.append(line);
-                    }
-                    callback.onDataReceived(parseWeatherData(result.toString()));
-
-                } finally {
-                    urlConnection.disconnect();
+                InputStream in = new BufferedInputStream(urlConnection.getInputStream());
+                BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+                StringBuilder result = new StringBuilder();
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    result.append(line);
                 }
+                weatherData = parseWeatherData(result.toString());
+                urlConnection.disconnect();
             } catch (Exception e) {
-                callback.onError(e.toString());
+                e.printStackTrace();
             }
-        }).start();
+        });
+        thread.start();
+        try {
+            thread.join();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+            Thread.currentThread().interrupt();
+        }
+
+        return weatherData;
     }
+
 
     // See https://openweathermap.org/current
     private WeatherData parseWeatherData(String JSONData){
