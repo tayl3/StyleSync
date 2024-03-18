@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "927464070320",
+    "project_id": "stylesync-454",
+    "storage_bucket": "stylesync-454.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:927464070320:android:1705330e29a8ff3398af75",
+        "android_client_info": {
+          "package_name": "dev.stylesync.stylesync"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC1EaVHiUQbLw-s0racQyLsLRYsI83f8d8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
