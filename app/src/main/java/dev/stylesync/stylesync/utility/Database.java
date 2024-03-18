@@ -1,5 +1,7 @@
 package dev.stylesync.stylesync.utility;
 
+import android.os.Build;
+
 import java.sql.Array;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -10,14 +12,15 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Arrays;
 
+import dev.stylesync.stylesync.BuildConfig;
 import dev.stylesync.stylesync.data.UserData;
 
 public class Database {
-    private final String host = "127.0.0.1";
-    private final int port = 5432;
-    private final String user = "postgres";
-    private final String pass = "";
-    private final String database = "stylesync";
+    private final String host = BuildConfig.POSTGRES_HOST;
+    private final int port = Integer.parseInt(BuildConfig.POSTGRES_PORT);
+    private final String user = BuildConfig.POSTGRES_USER;
+    private final String pass = BuildConfig.POSTGRES_PASS;
+    private final String database = "railway";
     private final String userDataTable = "userdata";
     private String url = "jdbc:postgresql://%s:%d/";
     private Connection conn;

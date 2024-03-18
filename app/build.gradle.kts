@@ -1,3 +1,6 @@
+import java.util.Properties
+
+
 plugins {
     id("com.android.application")
 }
@@ -12,8 +15,69 @@ android {
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
+        android.buildFeatures.buildConfig = true
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        val keystoreFile = project.rootProject.file("app/apikey.properties")
+        val properties = Properties()
+        properties.load(keystoreFile.inputStream())
+
+        val postgresPass = properties.getProperty("POSTGRES_PASS") ?: ""
+        val postgresUser = properties.getProperty("POSTGRES_USER") ?: ""
+        val postgresHost = properties.getProperty("POSTGRES_HOST") ?: ""
+        val postgresPort = properties.getProperty("POSTGRES_PORT") ?: ""
+
+        val weatherUrl = properties.getProperty("WEATHER_API_URL") ?: ""
+        val weatherKey = properties.getProperty("WEATHER_API_KEY") ?: ""
+        val chatGptUrl = properties.getProperty("CHATGPT_API_URL") ?: ""
+        val chatGptKey = properties.getProperty("CHATGPT_API_KEY") ?: ""
+
+//        WEATHER_API_URL="https://api.openweathermap.org/data/2.5/weather"
+//        WEATHER_API_KEY="8474ee05487a0d67588216334a9cc992"
+//        CHATGPT_API_URL="https://api.openai.com/v1/chat/completions"
+//        CHATGPT_API_KEY="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"
+
+        buildConfigField(
+                type = "String",
+                name = "POSTGRES_PASS",
+                value = postgresPass
+        )
+        buildConfigField(
+                type = "String",
+                name = "POSTGRES_USER",
+                value = postgresUser
+        )
+        buildConfigField(
+                type = "String",
+                name = "POSTGRES_HOST",
+                value = postgresHost
+        )
+        buildConfigField(
+                type = "String",
+                name = "POSTGRES_PORT",
+                value = postgresPort
+        )
+
+        buildConfigField(
+                type = "String",
+                name = "WEATHER_API_URL",
+                value = weatherUrl
+        )
+        buildConfigField(
+                type = "String",
+                name = "WEATHER_API_KEY",
+                value = weatherKey
+        )
+        buildConfigField(
+                type = "String",
+                name = "CHATGPT_API_URL",
+                value = chatGptUrl
+        )
+        buildConfigField(
+                type = "String",
+                name = "CHATGPT_API_KEY",
+                value = chatGptKey
+        )
     }
 
     buildTypes {
