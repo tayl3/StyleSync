@@ -2,6 +2,10 @@ package dev.stylesync.stylesync;
 
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.view.View;
+import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
@@ -12,11 +16,11 @@ import androidx.navigation.ui.NavigationUI;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
-import dev.stylesync.stylesync.data.Data;
-import dev.stylesync.stylesync.data.DataCallback;
+import java.util.Arrays;
+
 import dev.stylesync.stylesync.databinding.ActivityMainBinding;
-import dev.stylesync.stylesync.service.AIService;
-import dev.stylesync.stylesync.service.UserDataService;
+import dev.stylesync.stylesync.service.PlanService;
+import dev.stylesync.stylesync.service.UserService;
 import dev.stylesync.stylesync.service.WeatherService;
 import dev.stylesync.stylesync.utility.Database;
 
@@ -26,16 +30,19 @@ public class MainActivity extends AppCompatActivity {
     public static final String WEATHER_API_KEY = "8474ee05487a0d67588216334a9cc992";
     public static final String CHATGPT_API_URL = "https://api.openai.com/v1/chat/completions";
     public static final String CHATGPT_API_KEY = "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";
+    private static final long UPDATE_INTERVAL_MS = 16;
 
     private ActivityMainBinding binding;
 
+    private final Handler uiHandler = new Handler(Looper.getMainLooper());
+
     // Services
-    public AIService aiService;
+    public PlanService planService;
     public WeatherService weatherService;
-    public UserDataService userDataService;
+    public UserService userService;
 
     public Database database;
-    private DataCallback planCallback;
+    private boolean generatingPlan;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,25 +68,48 @@ public class MainActivity extends AppCompatActivity {
         database = new Database();
 
         // Services
-        aiService = new AIService(this);
+        planService = new PlanService(this);
         weatherService = new WeatherService(this);
-        userDataService = new UserDataService(this);
+        userService = new UserService(this);
 
-        // Callback function after receiving plan
-        planCallback = new DataCallback() {
-            @Override
-            public void OnDataReceived(Data data) {
-                System.out.println(data);
+        // Starting the Runnable to update UI
+        uiHandler.post(updateTextViewRunnable);
+    }
+
+    public void generatePlan(View view) {
+        if (!generatingPlan){
+            setPlanText("Generating Plan...");
+            generatingPlan = true;
+            planService.generatePlan();
+        }
+    }
+
+    private final Runnable updateTextViewRunnable = new Runnable() {
+        @Override
+        public void run() {
+            if (planService.isPlanDataChanged()) {
+                if (planService.getPlanData() == null) {
+                    setPlanText("Failed to generate plan. Please try again.");
+                }
+                String text = "Plan 1: " + Arrays.toString(planService.getPlanData().getPlan1()) + "\n\n" +
+                        "Plan 2: " + Arrays.toString(planService.getPlanData().getPlan2()) + "\n\n" +
+                        "Plan 3: " + Arrays.toString(planService.getPlanData().getPlan3());
+                setPlanText(text);
+                generatingPlan = false;
+                planService.setPlanDataChanged(false);
             }
+            uiHandler.postDelayed(this, UPDATE_INTERVAL_MS);
+        }
+    };
 
-            @Override
-            public void OnError(String msg) {
-                System.err.println(msg);
-            }
-        };
+    private void setPlanText(String text) {
+        TextView textView = findViewById(R.id.text_home);
+        textView.setText(text);
+    }
 
-        // Infer plan once
-        aiService.generatePlan(planCallback);
+    private void setClothesText(String text){
+        TextView textView = findViewById(R.id.text_dashboard);
+        textView.setText(text);
     }
 
     private void requestPermission() {

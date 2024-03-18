@@ -105,9 +105,9 @@ public class Database {
             try {
                 PreparedStatement stmt = conn.prepareStatement(sql);
 
-                Array clothesArray = conn.createArrayOf("text", userData.clothes.toArray());
-                Array colorsArray = conn.createArrayOf("text", userData.userPreference.favorite_colors.toArray());
-                Array schedulesArray = conn.createArrayOf("text", userData.userPreference.schedules.toArray());
+                Array clothesArray = conn.createArrayOf("text", userData.getClothes().toArray());
+                Array colorsArray = conn.createArrayOf("text", userData.getUserPreference().getFavoriteColors().toArray());
+                Array schedulesArray = conn.createArrayOf("text", userData.getUserPreference().getSchedules().toArray());
 
                 stmt.setArray(1, clothesArray);
                 stmt.setArray(2, colorsArray);
@@ -142,11 +142,11 @@ public class Database {
                     Array schedulesArray = rs.getArray("schedules");
 
                     if (clothesArray != null)
-                        userData.clothes = Arrays.asList((String[]) clothesArray.getArray());
+                        userData.setClothes(Arrays.asList((String[]) clothesArray.getArray()));
                     if (colorsArray != null)
-                        userData.userPreference.favorite_colors = Arrays.asList((String[]) colorsArray.getArray());
+                        userData.getUserPreference().setFavoriteColors(Arrays.asList((String[]) colorsArray.getArray()));
                     if (schedulesArray != null)
-                        userData.userPreference.schedules = Arrays.asList((String[]) schedulesArray.getArray());
+                        userData.getUserPreference().setSchedules(Arrays.asList((String[]) schedulesArray.getArray()));
                 }
                 this.userData = userData;
             } catch (Exception e) {
@@ -190,9 +190,9 @@ public class Database {
 
     private void initSampleUserData() {
         UserData userData = new UserData();
-        userData.userPreference.favorite_colors = Arrays.asList("red", "blue");
-        userData.userPreference.schedules = Arrays.asList("hiking");
-        userData.clothes = Arrays.asList(
+        userData.getUserPreference().setFavoriteColors(Arrays.asList("red", "blue"));
+        userData.getUserPreference().setSchedules(Arrays.asList("hiking"));
+        userData.setClothes(Arrays.asList(
                 "Red T-shirt",
                 "Blue Jeans",
                 "Black Dress",
@@ -243,7 +243,7 @@ public class Database {
                 "Sports Bra",
                 "Cycling Jersey",
                 "Hiking Boots"
-        );
+        ));
         setUserData(userData);
     }
 }

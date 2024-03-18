@@ -6,17 +6,17 @@ import dev.stylesync.stylesync.MainActivity;
 import dev.stylesync.stylesync.data.UserData;
 import dev.stylesync.stylesync.utility.Database;
 
-public class UserDataService implements Service {
+public class UserService implements Service {
     private final Database database;
     private final UserData userData;
 
-    public UserDataService(MainActivity context) {
+    public UserService(MainActivity context) {
         this.database = context.database;
         this.userData = database.getUserData();
     }
 
-    public UserData getData() {
-        return database.getUserData();
+    public UserData getUserData() {
+        return userData;
     }
 
     public void addElement(List<String> list, String elem) {

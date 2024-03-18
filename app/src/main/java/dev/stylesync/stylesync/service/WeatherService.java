@@ -12,6 +12,7 @@ import org.json.JSONObject;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
@@ -51,7 +52,7 @@ public class WeatherService implements Service {
         return null;
     }
 
-    public WeatherData getData() {
+    public WeatherData getWeatherData() {
         Thread thread = new Thread(() -> {
             double[] coordinate = getCoordinate();
             if (coordinate == null) {
@@ -74,8 +75,9 @@ public class WeatherService implements Service {
                 }
                 weatherData = parseWeatherData(result.toString());
                 urlConnection.disconnect();
-            } catch (Exception e) {
-                e.printStackTrace();
+            } catch (IOException e) {
+                System.err.println("Network connection failed");
+                weatherData = null;
             }
         });
         thread.start();
@@ -95,13 +97,13 @@ public class WeatherService implements Service {
         try {
             JSONObject obj = new JSONObject(JSONData);
             WeatherData data = new WeatherData();
-            data.temperature.temp = obj.getJSONObject("main").getDouble("temp");
-            data.temperature.temp_feels_like = obj.getJSONObject("main").getDouble("feels_like");
-            data.temperature.temp_min = obj.getJSONObject("main").getDouble("temp_min");
-            data.temperature.temp_max = obj.getJSONObject("main").getDouble("temp_max");
-            data.humidity = obj.getJSONObject("main").getDouble("humidity");
-            data.wind_speed = obj.getJSONObject("wind").getDouble("speed");
-            data.weather = obj.getJSONArray("weather").getJSONObject(0).getString("main");
+            data.getTemperature().setTemp(obj.getJSONObject("main").getDouble("temp"));
+            data.getTemperature().setTempFeelsLike(obj.getJSONObject("main").getDouble("feels_like"));
+            data.getTemperature().setTempMin(obj.getJSONObject("main").getDouble("temp_min"));
+            data.getTemperature().setTempMax(obj.getJSONObject("main").getDouble("temp_max"));
+            data.setHumidity(obj.getJSONObject("main").getDouble("humidity"));
+            data.setWindSpeed(obj.getJSONObject("wind").getDouble("speed"));
+            data.setWeather(obj.getJSONArray("weather").getJSONObject(0).getString("main"));
             return data;
         } catch (Exception e) {
             System.err.println("Invalid weather JSON data: " + e);
