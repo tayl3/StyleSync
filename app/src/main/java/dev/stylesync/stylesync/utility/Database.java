@@ -10,14 +10,15 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Arrays;
 
+import dev.stylesync.stylesync.BuildConfig;
 import dev.stylesync.stylesync.data.UserData;
 
 public class Database {
-    private final String host = "127.0.0.1";
-    private final int port = 5432;
-    private final String user = "postgres";
-    private final String pass = "";
-    private final String database = "stylesync";
+    private final String host = BuildConfig.POSTGRES_HOST;
+    private final int port = Integer.parseInt(BuildConfig.POSTGRES_PORT);
+    private final String user = BuildConfig.POSTGRES_USER;
+    private final String pass = BuildConfig.POSTGRES_PASS;
+    private final String database = "railway";
     private final String userDataTable = "userdata";
     private String url = "jdbc:postgresql://%s:%d/";
     private Connection conn;
@@ -41,7 +42,6 @@ public class Database {
                 status = true;
             } catch (Exception e) {
                 status = false;
-                System.out.print(e.getMessage());
                 e.printStackTrace();
             }
         });
@@ -59,7 +59,6 @@ public class Database {
             System.out.println("Database '" + database + "' exists.");
         } catch (SQLException e) {
             createDatabase();
-            System.out.println("Database '" + database + "' has been created.");
         }
     }
 
@@ -69,6 +68,7 @@ public class Database {
         try (Connection conn = DriverManager.getConnection(url + "postgres", user, pass);
              Statement stmt = conn.createStatement()) {
             stmt.executeUpdate(sql);
+            System.out.println("Database '" + database + "' has been created.");
         } catch (SQLException e) {
             e.printStackTrace();
         }

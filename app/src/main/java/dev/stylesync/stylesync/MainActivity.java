@@ -26,10 +26,10 @@ import dev.stylesync.stylesync.utility.Database;
 
 public class MainActivity extends AppCompatActivity {
 
-    public static final String WEATHER_API_URL = "https://api.openweathermap.org/data/2.5/weather";
-    public static final String WEATHER_API_KEY = "8474ee05487a0d67588216334a9cc992";
-    public static final String CHATGPT_API_URL = "https://api.openai.com/v1/chat/completions";
-    public static final String CHATGPT_API_KEY = "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";
+    public static final String WEATHER_API_URL = BuildConfig.WEATHER_API_URL;
+    public static final String WEATHER_API_KEY = BuildConfig.WEATHER_API_KEY;
+    public static final String CHATGPT_API_URL = BuildConfig.CHATGPT_API_URL;
+    public static final String CHATGPT_API_KEY = BuildConfig.CHATGPT_API_KEY;
     private static final long UPDATE_INTERVAL_MS = 16;
 
     private ActivityMainBinding binding;
