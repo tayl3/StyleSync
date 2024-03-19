@@ -105,6 +105,7 @@ dependencies {
     implementation("org.postgresql:postgresql:42.2.5")
     implementation(platform("com.google.firebase:firebase-bom:32.7.4"))
     implementation("com.google.firebase:firebase-analytics")
+    implementation("com.google.firebase:firebase-database")
     implementation("com.firebaseui:firebase-ui-auth:7.2.0")
     implementation("androidx.annotation:annotation:1.6.0")
     implementation("androidx.legacy:legacy-support-v4:1.0.0")
