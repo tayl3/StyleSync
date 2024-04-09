@@ -1,7 +1,5 @@
 package dev.stylesync.stylesync.ui.settings;
 
-import android.mtp.MtpConstants;
-
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
@@ -32,6 +30,7 @@ public class SettingsViewModel extends ViewModel {
     public LiveData<String> getUsername() {
         return mUsername;
     }
+
     public LiveData<String> getUserId() {
         return mUserId;
     }
