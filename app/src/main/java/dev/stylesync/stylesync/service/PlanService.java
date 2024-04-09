@@ -4,9 +4,9 @@ import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 
 import dev.stylesync.stylesync.MainActivity;
-import dev.stylesync.stylesync.data.PromptData;
 import dev.stylesync.stylesync.data.PlanData;
 import dev.stylesync.stylesync.data.WeatherData;
+import dev.stylesync.stylesync.data.PromptData;
 import dev.stylesync.stylesync.utility.ChatGPT;
 
 public class PlanService implements Service {

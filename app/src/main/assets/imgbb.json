@@ -1,0 +1,31 @@
+{
+  "data": {
+    "id": "S51xXgC",
+    "title": "1516578592f0",
+    "url_viewer": "https://ibb.co/S51xXgC",
+    "url": "https://i.ibb.co/Xjd4ZPR/1516578592f0.jpg",
+    "display_url": "https://i.ibb.co/Xjd4ZPR/1516578592f0.jpg",
+    "width": 174,
+    "height": 232,
+    "size": 8303,
+    "time": 1712636810,
+    "expiration": 0,
+    "image": {
+      "filename": "1516578592f0.jpg",
+      "name": "1516578592f0",
+      "mime": "image/jpeg",
+      "extension": "jpg",
+      "url": "https://i.ibb.co/Xjd4ZPR/1516578592f0.jpg"
+    },
+    "thumb": {
+      "filename": "1516578592f0.jpg",
+      "name": "1516578592f0",
+      "mime": "image/jpeg",
+      "extension": "jpg",
+      "url": "https://i.ibb.co/S51xXgC/1516578592f0.jpg"
+    },
+    "delete_url": "https://ibb.co/S51xXgC/dac28b80b89810f18814ced5e568e895"
+  },
+  "success": true,
+  "status": 200
+}

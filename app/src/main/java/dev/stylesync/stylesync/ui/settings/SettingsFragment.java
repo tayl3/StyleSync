@@ -2,32 +2,28 @@ package dev.stylesync.stylesync.ui.settings;
 
 import static android.app.Activity.RESULT_OK;
 
-import androidx.activity.result.ActivityResultCallback;
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.lifecycle.ViewModelProvider;
-
 import android.content.Intent;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.navigation.NavController;
-import androidx.navigation.fragment.NavHostFragment;
-
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
+
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.NavController;
+import androidx.navigation.fragment.NavHostFragment;
 
 import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.FirebaseAuthUIActivityResultContract;
 import com.firebase.ui.auth.IdpResponse;
 import com.firebase.ui.auth.data.model.FirebaseAuthUIAuthenticationResult;
-import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -77,7 +73,7 @@ public class SettingsFragment extends Fragment {
         signOutButton = root.findViewById(R.id.sign_out_button);
 
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        if(user != null) {
+        if (user != null) {
             signInButton.setVisibility(View.GONE);
             signOutButton.setVisibility(View.VISIBLE);
             setWelcomeText(user.getDisplayName());
@@ -112,7 +108,7 @@ public class SettingsFragment extends Fragment {
 
     private void setWelcomeText(String username) {
         final TextView welcomeTextView = binding.welcomeTextView;
-        if(username != null) {
+        if (username != null) {
             settingsViewModel.setUsername(username);
             welcomeTextView.setText("Welcome, " + username + "!");
         } else {
@@ -132,7 +128,7 @@ public class SettingsFragment extends Fragment {
             // Successfully signed in
             FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
             settingsViewModel.setAuthenticated(true);
-            if(user != null && user.getDisplayName() != null) {
+            if (user != null && user.getDisplayName() != null) {
                 settingsViewModel.setUsername(user.getDisplayName());
                 settingsViewModel.setUserId(user.getUid());
             } else {
@@ -151,7 +147,7 @@ public class SettingsFragment extends Fragment {
             // sign-in flow using the back button. Otherwise check
             // response.getError().getErrorCode() and handle the error.
             // ...
-            if(response == null) {
+            if (response == null) {
                 Log.d("SettingsFragment", "User cancelled login");
             } else {
                 int errorCode = response.getError().getErrorCode();
@@ -173,7 +169,7 @@ public class SettingsFragment extends Fragment {
                         settingsViewModel.setUsername("GUEST");
                         settingsViewModel.setUserId("NULL");
                         settingsViewModel.setAuthenticated(false);
-                        if(binding != null) {
+                        if (binding != null) {
                             final TextView welcomeTextView = binding.welcomeTextView;
                             welcomeTextView.setText("Welcome, GUEST!");
                         }
