@@ -25,11 +25,6 @@ import dev.stylesync.stylesync.service.WeatherService;
 import dev.stylesync.stylesync.utility.Database;
 
 public class MainActivity extends AppCompatActivity {
-
-    public static final String WEATHER_API_URL = BuildConfig.WEATHER_API_URL;
-    public static final String WEATHER_API_KEY = BuildConfig.WEATHER_API_KEY;
-    public static final String CHATGPT_API_URL = BuildConfig.CHATGPT_API_URL;
-    public static final String CHATGPT_API_KEY = BuildConfig.CHATGPT_API_KEY;
     private static final long UPDATE_INTERVAL_MS = 16;
 
     private ActivityMainBinding binding;

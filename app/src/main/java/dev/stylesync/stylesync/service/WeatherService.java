@@ -20,6 +20,7 @@ import java.net.URL;
 
 import dev.stylesync.stylesync.MainActivity;
 import dev.stylesync.stylesync.data.WeatherData;
+import dev.stylesync.stylesync.utility.Secrets;
 
 public class WeatherService implements Service {
     private final MainActivity context;
@@ -64,7 +65,7 @@ public class WeatherService implements Service {
             double longitude = coordinate[1];
 
             try {
-                URL url = new URL(MainActivity.WEATHER_API_URL + "?lat=" + latitude + "&lon=" + longitude + "&appid=" + MainActivity.WEATHER_API_KEY);
+                URL url = new URL(Secrets.WEATHER_API_URL + "?lat=" + latitude + "&lon=" + longitude + "&appid=" + Secrets.WEATHER_API_KEY);
                 HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
                 InputStream in = new BufferedInputStream(urlConnection.getInputStream());
                 BufferedReader reader = new BufferedReader(new InputStreamReader(in));
