@@ -32,6 +32,7 @@ android {
         val weatherKey = properties.getProperty("WEATHER_API_KEY") ?: ""
         val chatGptUrl = properties.getProperty("CHATGPT_API_URL") ?: ""
         val chatGptKey = properties.getProperty("CHATGPT_API_KEY") ?: ""
+        val imgbbKey = properties.getProperty("IMGBB_API_KEY") ?: ""
 
         buildConfigField(
                 type = "String",
@@ -74,6 +75,11 @@ android {
                 name = "CHATGPT_API_KEY",
                 value = chatGptKey
         )
+        buildConfigField(
+                type = "String",
+                name = "IMGBB_API_KEY",
+                value = imgbbKey
+        )
     }
 
     buildTypes {
@@ -111,6 +117,7 @@ dependencies {
     implementation("com.firebaseui:firebase-ui-auth:7.2.0")
     implementation("androidx.annotation:annotation:1.6.0")
     implementation("androidx.legacy:legacy-support-v4:1.0.0")
+    implementation("com.android.volley:volley:1.2.1")
     //implementation("com.google.android.gms:play-services-auth:21.0.0")
 
     testImplementation("junit:junit:4.13.2")
