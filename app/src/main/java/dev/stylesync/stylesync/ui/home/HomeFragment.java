@@ -17,42 +17,43 @@ import dev.stylesync.stylesync.R;
 import dev.stylesync.stylesync.databinding.FragmentHomeBinding;
 import dev.stylesync.stylesync.ui.home.viewpager.ViewPagerAdapter;
 import dev.stylesync.stylesync.ui.home.viewpager.ViewPagerItem;
+import dev.stylesync.stylesync.ui.viewmodel.SharedViewModel;
 
 public class HomeFragment extends Fragment {
 
     ViewPager2 viewPager2;
-    ArrayList<ViewPagerItem> itemList;
-
     private FragmentHomeBinding binding;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        HomeViewModel homeViewModel =
-                new ViewModelProvider(this).get(HomeViewModel.class);
 
         binding = FragmentHomeBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
         viewPager2 = root.findViewById(R.id.view_pager);
-        int[] images = {R.drawable.baseline_10k_24, R.drawable.baseline_settings_24, R.drawable.ic_home_black_24dp};
-        String[] headings = {"10k", "Settings", "Home"};
-        String[] descriptions = {"10k image", "Settings icon", "Home button icon"};
 
-        itemList = new ArrayList<>();
-        for(int i = 0; i < images.length; i++) {
-            ViewPagerItem viewPagerItem = new ViewPagerItem(images[i], headings[i], descriptions[i]);
-            itemList.add(viewPagerItem);
-        }
+        SharedViewModel sharedViewModel = new ViewModelProvider(requireActivity()).get(SharedViewModel.class);
+        sharedViewModel.getIsLoading().observe(getViewLifecycleOwner(), isLoading -> {
+            if (isLoading) {
+                viewPager2.setVisibility(View.GONE);
+            } else {
+                sharedViewModel.getViewPagerItems().observe(getViewLifecycleOwner(), items -> {
+                    if(items != null && !items.isEmpty()) {
+                        ViewPagerAdapter viewPagerAdapter = new ViewPagerAdapter(items);
+                        viewPager2.setAdapter(viewPagerAdapter);
+                        viewPager2.setVisibility(View.VISIBLE);
+                    } else {
+                        viewPager2.setVisibility(View.GONE);
+                    }
+                });
+            }
+        });
 
-        ViewPagerAdapter viewPagerAdapter = new ViewPagerAdapter(itemList);
-        viewPager2.setAdapter(viewPagerAdapter);
         viewPager2.setClipToPadding(false);
         viewPager2.setClipChildren(false);
         viewPager2.setOffscreenPageLimit(2);
         viewPager2.getChildAt(0).setOverScrollMode(View.OVER_SCROLL_NEVER);
 
-        final TextView textView = binding.textHome;
-        homeViewModel.getText().observe(getViewLifecycleOwner(), textView::setText);
         return root;
     }
 

@@ -10,14 +10,15 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import dev.stylesync.stylesync.R;
 
 public class ViewPagerAdapter extends RecyclerView.Adapter<ViewPagerAdapter.ViewHolder> {
 
-    ArrayList<ViewPagerItem> itemList;
+    List<ViewPagerItem> itemList;
 
-    public ViewPagerAdapter(ArrayList<ViewPagerItem> itemList) {
+    public ViewPagerAdapter(List<ViewPagerItem> itemList) {
         this.itemList = itemList;
     }
 

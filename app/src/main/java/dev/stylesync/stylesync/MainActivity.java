@@ -11,6 +11,7 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
@@ -22,6 +23,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.io.ByteArrayOutputStream;
 import java.util.Arrays;
+import java.util.List;
 
 import dev.stylesync.stylesync.data.Data;
 import dev.stylesync.stylesync.data.DataCallback;
@@ -34,6 +36,8 @@ import dev.stylesync.stylesync.service.ImageService;
 import dev.stylesync.stylesync.service.PlanService;
 import dev.stylesync.stylesync.service.UserService;
 import dev.stylesync.stylesync.service.WeatherService;
+import dev.stylesync.stylesync.ui.home.viewpager.ViewPagerItem;
+import dev.stylesync.stylesync.ui.viewmodel.SharedViewModel;
 import dev.stylesync.stylesync.utility.Database;
 
 public class MainActivity extends AppCompatActivity {
@@ -44,6 +48,8 @@ public class MainActivity extends AppCompatActivity {
     public WeatherService weatherService;
     public UserService userService;
     public ImageService imageService;
+
+    public SharedViewModel sharedViewModel;
 
     public Database database;
 
@@ -84,22 +90,29 @@ public class MainActivity extends AppCompatActivity {
         imageService = new ImageService(this);
 
         volleyRequestQueue = Volley.newRequestQueue(this);
+        sharedViewModel = new ViewModelProvider(this).get(SharedViewModel.class);
     }
 
     public void generatePlan(View view) {
         if (generatingPlan) {
             return;
         }
+        showPlanText();
         setPlanText("Generating Plan...");
+
+        // Signal to ViewPager that it should be hidden while the plan is being generated
+        sharedViewModel.setLoading(true);
         generatingPlan = true;
         planService.generatePlan(new DataCallback() {
             @Override
             public void onDataReceived(Data data) {
                 PlanData planData = (PlanData) data;
-                String text = "Plan 1: " + Arrays.toString(planData.getPlan1()) + "\n\n" +
-                        "Plan 2: " + Arrays.toString(planData.getPlan2()) + "\n\n" +
-                        "Plan 3: " + Arrays.toString(planData.getPlan3());
-                setPlanText(text);
+
+                List<ViewPagerItem> viewPagerItems = PlanData.convertPlanDataToViewPagerItems(planData);
+                sharedViewModel.setViewPagerItems(viewPagerItems);
+                sharedViewModel.setLoading(false);
+                hidePlanText();
+
                 generatingPlan = false;
             }
 
@@ -107,6 +120,8 @@ public class MainActivity extends AppCompatActivity {
             public void onError(String message) {
                 System.err.println(message);
                 setPlanText("Failed to generate plan. Please try again.");
+                showPlanText();
+                sharedViewModel.setLoading(false);
                 generatingPlan = false;
             }
         });
@@ -167,6 +182,20 @@ public class MainActivity extends AppCompatActivity {
         runOnUiThread(() -> {
             TextView textView = findViewById(R.id.text_home);
             textView.setText(text);
+        });
+    }
+
+    private void hidePlanText() {
+        runOnUiThread(() -> {
+            TextView textView = findViewById(R.id.text_home);
+            textView.setVisibility(View.GONE);
+        });
+    }
+
+    private void showPlanText() {
+        runOnUiThread(() -> {
+            TextView textView = findViewById(R.id.text_home);
+            textView.setVisibility(View.VISIBLE);
         });
     }
 
