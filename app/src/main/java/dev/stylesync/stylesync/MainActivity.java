@@ -19,6 +19,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import java.util.Arrays;
 
 import dev.stylesync.stylesync.databinding.ActivityMainBinding;
+import dev.stylesync.stylesync.data.PlanData;
 import dev.stylesync.stylesync.service.PlanService;
 import dev.stylesync.stylesync.service.UserService;
 import dev.stylesync.stylesync.service.WeatherService;
@@ -47,8 +48,6 @@ public class MainActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
 
         BottomNavigationView navView = findViewById(R.id.nav_view);
-        // Passing each menu ID as a set of Ids because each
-        // menu should be considered as top level destinations.
         AppBarConfiguration appBarConfiguration = new AppBarConfiguration.Builder(
                 R.id.navigation_home, R.id.navigation_dashboard, R.id.navigation_settings)
                 .build();
@@ -62,57 +61,47 @@ public class MainActivity extends AppCompatActivity {
         // Database
         database = new Database();
 
-        // Services
+        // Initialize Services
         planService = new PlanService(this);
         weatherService = new WeatherService(this);
         userService = new UserService(this);
-
-        // Starting the Runnable to update UI
-        uiHandler.post(updateTextViewRunnable);
     }
 
     public void generatePlan(View view) {
         if (!generatingPlan){
             setPlanText("Generating Plan...");
             generatingPlan = true;
-            planService.generatePlan();
-        }
-    }
-
-    private final Runnable updateTextViewRunnable = new Runnable() {
-        @Override
-        public void run() {
-            if (planService.isPlanDataChanged()) {
-                if (planService.getPlanData() == null) {
-                    setPlanText("Failed to generate plan. Please try again.");
+            planService.generatePlan(new PlanService.PlanDataCallback() {
+                @Override
+                public void onPlanDataFetched(PlanData planData) {
+                    String text = "Plan 1: " + Arrays.toString(planData.getPlan1()) + "\n\n" +
+                            "Plan 2: " + Arrays.toString(planData.getPlan2()) + "\n\n" +
+                            "Plan 3: " + Arrays.toString(planData.getPlan3());
+                    setPlanText(text);
+                    generatingPlan = false;
                 }
-                String text = "Plan 1: " + Arrays.toString(planService.getPlanData().getPlan1()) + "\n\n" +
-                        "Plan 2: " + Arrays.toString(planService.getPlanData().getPlan2()) + "\n\n" +
-                        "Plan 3: " + Arrays.toString(planService.getPlanData().getPlan3());
-                setPlanText(text);
-                generatingPlan = false;
-                planService.setPlanDataChanged(false);
-            }
-            uiHandler.postDelayed(this, UPDATE_INTERVAL_MS);
-        }
-    };
 
-    private void setPlanText(String text) {
-        TextView textView = findViewById(R.id.text_home);
-        textView.setText(text);
+                @Override
+                public void onError(String message) {
+                    setPlanText("Failed to generate plan. Please try again.");
+                    generatingPlan = false;
+                }
+            });
+        }
     }
 
-    private void setClothesText(String text){
-        TextView textView = findViewById(R.id.text_dashboard);
-        textView.setText(text);
+    private void setPlanText(final String text) {
+        runOnUiThread(() -> {
+            TextView textView = findViewById(R.id.text_home);
+            textView.setText(text);
+        });
     }
 
     private void requestPermission() {
-        // Location
         if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{
-                    "android.permission.ACCESS_FINE_LOCATION",
-                    "android.permission.ACCESS_COARSE_LOCATION"}, 0);
+                    android.Manifest.permission.ACCESS_FINE_LOCATION,
+                    android.Manifest.permission.ACCESS_COARSE_LOCATION}, 0);
         }
     }
 }
