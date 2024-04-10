@@ -1,5 +1,7 @@
 package dev.stylesync.stylesync.data;
 
+import androidx.annotation.NonNull;
+
 import java.util.Arrays;
 
 public class PlanData implements Data {
@@ -19,6 +21,7 @@ public class PlanData implements Data {
         return plan3;
     }
 
+    @NonNull
     @Override
     public String toString() {
         return "PlanData{" +

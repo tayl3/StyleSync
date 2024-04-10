@@ -1,26 +1,20 @@
 package dev.stylesync.stylesync.utility;
 
-import android.content.Context;
-
 import com.android.volley.Request;
-import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.Volley;
+import com.google.gson.Gson;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import dev.stylesync.stylesync.MainActivity;
+import dev.stylesync.stylesync.data.ChatGPTData;
+import dev.stylesync.stylesync.data.DataCallback;
 
 public class ChatGPT {
 
-    private static RequestQueue queue;
-
-    public static void sendPrompt(Context context, String prompt, final VolleyResponseListener listener) {
-        if (queue == null) {
-            queue = Volley.newRequestQueue(context.getApplicationContext());
-        }
+    public static void sendPrompt(MainActivity context, String prompt, final DataCallback callback) {
 
         String url = Secrets.CHATGPT_API_URL;
 
@@ -30,21 +24,21 @@ public class ChatGPT {
             jsonRequest.put("messages", new JSONArray().put(new JSONObject().put("role", "user").put("content", prompt)));
         } catch (JSONException e) {
             e.printStackTrace();
-            listener.onError("Failed to create JSON request");
+            callback.onError("Failed to create JSON request");
             return;
         }
 
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, url, jsonRequest,
                 response -> {
-                    String parsedResponse = parseResponse(response.toString());
-                    if (parsedResponse != null) {
-                        listener.onResponse(parsedResponse);
+                    ChatGPTData data = new Gson().fromJson(response.toString(), ChatGPTData.class);
+                    if (data != null) {
+                        callback.onDataReceived(data);
                     } else {
-                        listener.onError("Failed to parse response");
+                        callback.onError("Failed to parse response");
                     }
-                }, error -> listener.onError("Error in network request: " + error.getMessage())) {
+                }, error -> callback.onError("Error in network request: " + error.getMessage())) {
             @Override
-            public java.util.Map<String, String> getHeaders() throws com.android.volley.AuthFailureError {
+            public java.util.Map<String, String> getHeaders() {
                 java.util.Map<String, String> headers = new java.util.HashMap<>();
                 headers.put("Content-Type", "application/json");
                 headers.put("Authorization", "Bearer " + Secrets.CHATGPT_API_KEY);
@@ -52,22 +46,6 @@ public class ChatGPT {
             }
         };
 
-        queue.add(jsonObjectRequest);
-    }
-
-    private static String parseResponse(String response) {
-        JSONObject jsonObj;
-        try {
-            jsonObj = new JSONObject(response);
-            return jsonObj.getJSONArray("choices").getJSONObject(0).getJSONObject("message").getString("content");
-        } catch (JSONException e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
-
-    public interface VolleyResponseListener {
-        void onResponse(String response);
-        void onError(String message);
+        context.volleyRequestQueue.add(jsonObjectRequest);
     }
 }

@@ -4,39 +4,33 @@ import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 
 import dev.stylesync.stylesync.MainActivity;
-import dev.stylesync.stylesync.data.PromptData;
+import dev.stylesync.stylesync.data.ChatGPTData;
+import dev.stylesync.stylesync.data.Data;
+import dev.stylesync.stylesync.data.DataCallback;
 import dev.stylesync.stylesync.data.PlanData;
+import dev.stylesync.stylesync.data.PromptData;
 import dev.stylesync.stylesync.data.WeatherData;
 import dev.stylesync.stylesync.utility.ChatGPT;
 
 public class PlanService implements Service {
     private final MainActivity context;
-    private PlanData planData;
-    private boolean planDataChanged;
 
     // Constructor
     public PlanService(MainActivity context) {
         this.context = context;
     }
 
-    // Interface for callbacks when plan data is fetched or error occurs
-    public interface PlanDataCallback {
-        void onPlanDataFetched(PlanData planData);
-        void onError(String message);
-    }
-
     // Method to generate plan asynchronously
-    public void generatePlan(PlanDataCallback callback) {
+    public void generatePlan(DataCallback callback) {
         PromptData promptData = new PromptData();
 
-        context.weatherService.getWeatherData(new WeatherService.WeatherDataCallback() {
+        context.weatherService.getWeatherData(new DataCallback() {
             @Override
-            public void onWeatherDataFetched(WeatherData weatherData) {
-                promptData.setWeatherData(weatherData);
+            public void onDataReceived(Data data) {
+                promptData.setWeatherData((WeatherData) data);
                 promptData.setUserData(context.userService.getUserData());
 
                 if (promptData.getUserData() == null) {
-                    System.err.println("Failed to retrieve user data");
                     callback.onError("Failed to retrieve user data");
                     return;
                 }
@@ -44,39 +38,33 @@ public class PlanService implements Service {
                 String promptDataJSON = new Gson().toJson(promptData);
                 String prompt = makePrompt(promptDataJSON);
 
-                ChatGPT.sendPrompt(context, prompt, new ChatGPT.VolleyResponseListener() {
+                ChatGPT.sendPrompt(context, prompt, new DataCallback() {
                     @Override
-                    public void onResponse(String response) {
+                    public void onDataReceived(Data data) {
+                        ChatGPTData response = (ChatGPTData) data;
                         try {
-                            PlanData fetchedPlanData = new Gson().fromJson(response, PlanData.class);
-                            setPlanData(fetchedPlanData);
-                            setPlanDataChanged(true);
-                            callback.onPlanDataFetched(fetchedPlanData);
+                            PlanData planData = new Gson().fromJson(response.getContent(), PlanData.class);
+                            callback.onDataReceived(planData);
                         } catch (JsonSyntaxException e) {
-                            System.err.println("Invalid response from ChatGPT: " + response);
-                            callback.onError("Invalid response format from ChatGPT");
+                            callback.onError("Invalid response from ChatGPT: " + response.getContent());
                         } catch (Exception e) {
-                            e.printStackTrace();
-                            callback.onError("An error occurred processing the response");
+                            callback.onError("An error occurred processing the response: " + e);
                         }
                     }
 
                     @Override
                     public void onError(String message) {
-                        System.err.println("Failed to send prompt: " + message);
-                        callback.onError(message);
+                        callback.onError("Failed to send prompt: " + message);
                     }
                 });
             }
 
             @Override
             public void onError(String message) {
-                System.err.println("Failed to retrieve weather data");
-                callback.onError("Failed to retrieve weather data");
+                callback.onError("Failed to retrieve weather data: " + message);
             }
         });
     }
-
 
     // Helper method to create prompt
     private String makePrompt(String json) {
@@ -86,22 +74,5 @@ public class PlanService implements Service {
                 + "User preference adds some weight to the plan but is not required. Make sure to generate a comprehensive plan "
                 + "that is suitable to go outside: {\"plan1\":[],\"plan2\":[],\"plan3\":[]}"
                 + " DO NOT HAVE EXTRA TEXT ASIDE FROM THE JSON OUTPUT, INCLUDING NEW LINES";
-    }
-
-    // Getters and setters
-    public PlanData getPlanData() {
-        return planData;
-    }
-
-    public void setPlanData(PlanData planData) {
-        this.planData = planData;
-    }
-
-    public boolean isPlanDataChanged() {
-        return planDataChanged;
-    }
-
-    public void setPlanDataChanged(boolean planDataChanged) {
-        this.planDataChanged = planDataChanged;
     }
 }
