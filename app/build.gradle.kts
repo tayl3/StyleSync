@@ -23,36 +23,18 @@ android {
         val properties = Properties()
         properties.load(keystoreFile.inputStream())
 
-        val postgresPass = properties.getProperty("POSTGRES_PASS") ?: ""
-        val postgresUser = properties.getProperty("POSTGRES_USER") ?: ""
-        val postgresHost = properties.getProperty("POSTGRES_HOST") ?: ""
-        val postgresPort = properties.getProperty("POSTGRES_PORT") ?: ""
+//        val postgresPass = properties.getProperty("POSTGRES_PASS") ?: ""
+//        val postgresUser = properties.getProperty("POSTGRES_USER") ?: ""
+//        val postgresHost = properties.getProperty("POSTGRES_HOST") ?: ""
+//        val postgresPort = properties.getProperty("POSTGRES_PORT") ?: ""
+
+        val postgresUrl = properties.getProperty("POSTGRES_URL") ?: ""
 
         val weatherUrl = properties.getProperty("WEATHER_API_URL") ?: ""
         val weatherKey = properties.getProperty("WEATHER_API_KEY") ?: ""
         val chatGptUrl = properties.getProperty("CHATGPT_API_URL") ?: ""
         val chatGptKey = properties.getProperty("CHATGPT_API_KEY") ?: ""
-
-        buildConfigField(
-                type = "String",
-                name = "POSTGRES_PASS",
-                value = postgresPass
-        )
-        buildConfigField(
-                type = "String",
-                name = "POSTGRES_USER",
-                value = postgresUser
-        )
-        buildConfigField(
-                type = "String",
-                name = "POSTGRES_HOST",
-                value = postgresHost
-        )
-        buildConfigField(
-                type = "String",
-                name = "POSTGRES_PORT",
-                value = postgresPort
-        )
+        val imgbbKey = properties.getProperty("IMGBB_API_KEY") ?: ""
 
         buildConfigField(
                 type = "String",
@@ -73,6 +55,16 @@ android {
                 type = "String",
                 name = "CHATGPT_API_KEY",
                 value = chatGptKey
+        )
+        buildConfigField(
+                type = "String",
+                name = "IMGBB_API_KEY",
+                value = imgbbKey
+        )
+        buildConfigField(
+                type = "String",
+                name = "POSTGRES_URL",
+                value = postgresUrl
         )
     }
 
@@ -97,19 +89,22 @@ dependencies {
     implementation("androidx.appcompat:appcompat:1.6.1")
     implementation("com.google.android.material:material:1.11.0")
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
-    implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.7.0")
-    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.7.0")
-    implementation("androidx.navigation:navigation-fragment:2.7.7")
-    implementation("androidx.navigation:navigation-ui:2.7.7")
-    implementation("com.google.code.gson:gson:2.10.1")
+    implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.6.1")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.1")
+    implementation("androidx.navigation:navigation-fragment:2.6.0")
+    implementation("androidx.navigation:navigation-ui:2.6.0")
+    implementation("com.google.code.gson:gson:2.10")
     implementation("org.postgresql:postgresql:42.2.5")
     implementation(platform("com.google.firebase:firebase-bom:32.8.0"))
     implementation("com.google.firebase:firebase-auth")
     implementation("com.google.firebase:firebase-firestore")
+    //implementation("com.google.firebase:firebase-analytics")
+    //implementation("com.google.firebase:firebase-database")
     implementation("com.firebaseui:firebase-ui-auth:7.2.0")
-    implementation("androidx.annotation:annotation:1.7.1")
+    implementation("androidx.annotation:annotation:1.6.0")
     implementation("androidx.legacy:legacy-support-v4:1.0.0")
     implementation("com.android.volley:volley:1.2.1")
+    //implementation("com.google.android.gms:play-services-auth:21.0.0")
 
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")

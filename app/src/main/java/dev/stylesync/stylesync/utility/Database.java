@@ -14,19 +14,14 @@ import dev.stylesync.stylesync.BuildConfig;
 import dev.stylesync.stylesync.data.UserData;
 
 public class Database {
-    private final String host = BuildConfig.POSTGRES_HOST;
-    private final int port = Integer.parseInt(BuildConfig.POSTGRES_PORT);
-    private final String user = BuildConfig.POSTGRES_USER;
-    private final String pass = BuildConfig.POSTGRES_PASS;
-    private final String database = "railway";
+    private final String database = "supabase";
     private final String userDataTable = "userdata";
-    private String url = "jdbc:postgresql://%s:%d/";
+    private String postgresUrl = BuildConfig.POSTGRES_URL;
     private Connection conn;
     private boolean status;
     private UserData userData;
 
     public Database() {
-        this.url = String.format(this.url, this.host, this.port);
         connect();
         System.out.println("Database connection: " + status);
     }
@@ -36,7 +31,7 @@ public class Database {
             try {
                 Class.forName("org.postgresql.Driver");
                 checkAndCreateDatabase();
-                conn = DriverManager.getConnection(url + database, user, pass);
+                conn = DriverManager.getConnection(postgresUrl);
                 checkAndCreateTable();
                 initSampleUserData();
                 status = true;
@@ -55,7 +50,7 @@ public class Database {
     }
 
     private void checkAndCreateDatabase() {
-        try (Connection conn = DriverManager.getConnection(url + database, user, pass)) {
+        try (Connection conn = DriverManager.getConnection(postgresUrl)) {
             System.out.println("Database '" + database + "' exists.");
         } catch (SQLException e) {
             createDatabase();
@@ -65,7 +60,7 @@ public class Database {
     private void createDatabase() {
         String sql = "CREATE DATABASE " + database;
 
-        try (Connection conn = DriverManager.getConnection(url + "postgres", user, pass);
+        try (Connection conn = DriverManager.getConnection(postgresUrl);
              Statement stmt = conn.createStatement()) {
             stmt.executeUpdate(sql);
             System.out.println("Database '" + database + "' has been created.");
@@ -167,7 +162,7 @@ public class Database {
     public void dropDatabase(String database) {
         String sql = "DROP DATABASE IF EXISTS " + database;
 
-        try (Connection conn = DriverManager.getConnection(url + "postgres", user, pass);
+        try (Connection conn = DriverManager.getConnection(postgresUrl);
              Statement stmt = conn.createStatement()) {
             stmt.executeUpdate(sql);
             System.out.println("Database '" + database + "' has been dropped.");
