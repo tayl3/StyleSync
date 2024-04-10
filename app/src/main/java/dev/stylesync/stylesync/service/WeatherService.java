@@ -9,27 +9,22 @@ import android.location.LocationManager;
 import androidx.core.app.ActivityCompat;
 
 import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.Volley;
 
 import org.json.JSONObject;
 
 import dev.stylesync.stylesync.MainActivity;
+import dev.stylesync.stylesync.data.DataCallback;
 import dev.stylesync.stylesync.data.WeatherData;
 import dev.stylesync.stylesync.utility.Secrets;
 
 public class WeatherService implements Service {
     private final MainActivity context;
     private final LocationManager locationManager;
-    private RequestQueue requestQueue;
 
     public WeatherService(MainActivity context) {
         this.context = context;
         this.locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
-        this.requestQueue = Volley.newRequestQueue(context.getApplicationContext());
     }
 
     private double[] getCoordinate() {
@@ -49,7 +44,7 @@ public class WeatherService implements Service {
         return null;
     }
 
-    public void getWeatherData(final WeatherDataCallback callback) {
+    public void getWeatherData(final DataCallback callback) {
         double[] coordinate = getCoordinate();
         if (coordinate == null) {
             callback.onError("Location data unavailable");
@@ -60,25 +55,17 @@ public class WeatherService implements Service {
 
         String url = Secrets.WEATHER_API_URL + "?lat=" + latitude + "&lon=" + longitude + "&appid=" + Secrets.WEATHER_API_KEY;
 
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, url, null,
-                new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        WeatherData weatherData = parseWeatherData(response.toString());
-                        if (weatherData != null) {
-                            callback.onWeatherDataFetched(weatherData);
-                        } else {
-                            callback.onError("Failed to parse weather data");
-                        }
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, url, null,
+                response -> {
+                    WeatherData weatherData = parseWeatherData(response.toString());
+                    if (weatherData != null) {
+                        callback.onDataReceived(weatherData);
+                    } else {
+                        callback.onError("Failed to parse weather data");
                     }
-                }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                callback.onError("Network connection failed");
-            }
-        });
+                }, error -> callback.onError("Network connection failed"));
 
-        requestQueue.add(jsonObjectRequest);
+        context.volleyRequestQueue.add(jsonObjectRequest);
     }
 
     private WeatherData parseWeatherData(String JSONData) {
@@ -98,10 +85,5 @@ public class WeatherService implements Service {
             System.err.println("Invalid weather JSON data: " + e.getMessage());
             return null;
         }
-    }
-
-    public interface WeatherDataCallback {
-        void onWeatherDataFetched(WeatherData weatherData);
-        void onError(String message);
     }
 }
