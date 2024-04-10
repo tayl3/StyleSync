@@ -27,6 +27,7 @@ import dev.stylesync.stylesync.data.Data;
 import dev.stylesync.stylesync.data.DataCallback;
 import dev.stylesync.stylesync.data.ImgBBData;
 import dev.stylesync.stylesync.data.PlanData;
+import dev.stylesync.stylesync.data.StringCallback;
 import dev.stylesync.stylesync.databinding.ActivityMainBinding;
 import dev.stylesync.stylesync.service.ImageService;
 import dev.stylesync.stylesync.service.PlanService;
@@ -44,9 +45,12 @@ public class MainActivity extends AppCompatActivity {
     public ImageService imageService;
 
     public Database database;
-    private boolean generatingPlan;
 
     public RequestQueue volleyRequestQueue;
+    // States
+    private boolean generatingPlan;
+    private boolean detectingImage;
+
     public static final int REQUEST_CODE_CAPTURE_IMAGE = 1;
     public static final int PERMISSION_CODE_LOCATION = 1;
     public static final int PERMISSION_CODE_CAMERA = 2;
@@ -79,8 +83,6 @@ public class MainActivity extends AppCompatActivity {
         imageService = new ImageService(this);
 
         volleyRequestQueue = Volley.newRequestQueue(this);
-
-        imageService.captureImage();
     }
 
     public void generatePlan(View view) {
@@ -105,6 +107,57 @@ public class MainActivity extends AppCompatActivity {
                 System.err.println(message);
                 setPlanText("Failed to generate plan. Please try again.");
                 generatingPlan = false;
+            }
+        });
+    }
+
+    public void captureImage(View view){
+        if (detectingImage){
+            return;
+        }
+        detectingImage = true;
+        setPlanText("Capturing Image...");
+        imageService.captureImage();
+    }
+
+    private void onImageReceived(String imageBase64){
+        setPlanText("Detecting Clothing Item...");
+        imageService.uploadImage(imageBase64, new DataCallback() {
+            @Override
+            public void onDataReceived(Data data) {
+                ImgBBData imgBBData = (ImgBBData) data;
+                if (!imgBBData.isSuccess()) {
+                    System.err.println("Image upload unsuccessful");
+                    return;
+                }
+                System.out.println("Image URL: " + imgBBData.getData().getUrl());
+                imageService.identifyImage(imgBBData.getData().getUrl(), new StringCallback() {
+                    @Override
+                    public void onStringReceived(String string) {
+                        detectingImage = false;
+                        if (string.equals("False")){
+                            setPlanText("No Clothing Item Detected");
+                            return;
+                        }
+                        if (string.equals("Multiple")){
+                            setPlanText("Multiple Clothing Items Detected");
+                            return;
+                        }
+                        setPlanText("Clothing Item Detected:\n" + string);
+                    }
+
+                    @Override
+                    public void onError(String message) {
+                        detectingImage = false;
+                        setPlanText(message);
+                        System.out.println(message);
+                    }
+                });
+            }
+
+            @Override
+            public void onError(String message) {
+                System.err.println(message);
             }
         });
     }
@@ -136,36 +189,18 @@ public class MainActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQUEST_CODE_CAPTURE_IMAGE) {
             if (resultCode != RESULT_OK) {
-                System.err.println("Failed to request image capture");
+                setPlanText("No Image Captured");
+                System.err.println("No image captured");
+                detectingImage = false;
                 return;
             }
             Bundle extras = data.getExtras();
-            if (extras == null || extras.get("data") == null) {
-                System.err.println("Failed to capture the image");
-                return;
-            }
-            System.out.println("Image captured");
             Bitmap imageBitmap = (Bitmap) extras.get("data");
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
             imageBitmap.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream);
             byte[] byteArray = byteArrayOutputStream.toByteArray();
             String imageBase64 = Base64.encodeToString(byteArray, Base64.DEFAULT);
-            imageService.uploadImage(imageBase64, new DataCallback() {
-                @Override
-                public void onDataReceived(Data data) {
-                    ImgBBData imgBBData = (ImgBBData) data;
-                    if (!imgBBData.isSuccess()) {
-                        System.err.println("Image upload unsuccessful");
-                        return;
-                    }
-                    System.out.println("Image URL: " + imgBBData.getData().getUrl());
-                }
-
-                @Override
-                public void onError(String message) {
-                    System.err.println(message);
-                }
-            });
+            onImageReceived(imageBase64);
         }
     }
 }
