@@ -19,6 +19,8 @@ import java.util.Map;
 import dev.stylesync.stylesync.MainActivity;
 import dev.stylesync.stylesync.data.DataCallback;
 import dev.stylesync.stylesync.data.ImgBBData;
+import dev.stylesync.stylesync.data.StringCallback;
+import dev.stylesync.stylesync.utility.ChatGPT;
 import dev.stylesync.stylesync.utility.Secrets;
 
 public class ImageService implements Service {
@@ -55,5 +57,26 @@ public class ImageService implements Service {
         };
 
         context.volleyRequestQueue.add(stringRequest);
+    }
+
+    public void identifyImage(String url, StringCallback callback) {
+        ChatGPT.sendPrompt(context, ChatGPT.makeImageRequest(makePrompt(), url), new StringCallback() {
+            @Override
+            public void onStringReceived(String string) {
+                if (string.lastIndexOf('.') == string.length() - 1) {
+                    string = string.substring(0, string.length() - 1);
+                }
+                callback.onStringReceived(string);
+            }
+
+            @Override
+            public void onError(String message) {
+                callback.onError("Failed to identify the image");
+            }
+        });
+    }
+
+    private static String makePrompt() {
+        return "Provide a detailed description of the clothing, accessory, or other wearing item in this image, including its color, style, pattern, shape, text, and any distinctive features present. The description should contain a few qualifiers and the type of the item. The description should not be a list of keywords and avoid using commas or other separators. Identify specific brand and model if possible. The length should be no more than 10 words. Output \"False\" if you cannot identify any item. Output \"Multiple\" if you can identify multiple items.";
     }
 }

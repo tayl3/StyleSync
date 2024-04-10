@@ -4,11 +4,11 @@ import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 
 import dev.stylesync.stylesync.MainActivity;
-import dev.stylesync.stylesync.data.ChatGPTData;
 import dev.stylesync.stylesync.data.Data;
 import dev.stylesync.stylesync.data.DataCallback;
 import dev.stylesync.stylesync.data.PlanData;
 import dev.stylesync.stylesync.data.PromptData;
+import dev.stylesync.stylesync.data.StringCallback;
 import dev.stylesync.stylesync.data.WeatherData;
 import dev.stylesync.stylesync.utility.ChatGPT;
 
@@ -38,15 +38,14 @@ public class PlanService implements Service {
                 String promptDataJSON = new Gson().toJson(promptData);
                 String prompt = makePrompt(promptDataJSON);
 
-                ChatGPT.sendPrompt(context, prompt, new DataCallback() {
+                ChatGPT.sendPrompt(context, ChatGPT.makeTextRequest(prompt), new StringCallback() {
                     @Override
-                    public void onDataReceived(Data data) {
-                        ChatGPTData response = (ChatGPTData) data;
+                    public void onStringReceived(String string) {
                         try {
-                            PlanData planData = new Gson().fromJson(response.getContent(), PlanData.class);
+                            PlanData planData = new Gson().fromJson(string, PlanData.class);
                             callback.onDataReceived(planData);
                         } catch (JsonSyntaxException e) {
-                            callback.onError("Invalid response from ChatGPT: " + response.getContent());
+                            callback.onError("Invalid response from ChatGPT: " + string);
                         } catch (Exception e) {
                             callback.onError("An error occurred processing the response: " + e);
                         }
@@ -67,7 +66,7 @@ public class PlanService implements Service {
     }
 
     // Helper method to create prompt
-    private String makePrompt(String json) {
+    private static String makePrompt(String json) {
         return "Please generate an output JSON file with the following input: " + json
                 + " Fill out the following output with recommended outfit plans based on the weather conditions, "
                 + "favorite colors, schedules, and available clothes. The arrays should contain only string literals. "

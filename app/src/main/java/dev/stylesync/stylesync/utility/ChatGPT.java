@@ -2,37 +2,50 @@ package dev.stylesync.stylesync.utility;
 
 import com.android.volley.Request;
 import com.android.volley.toolbox.JsonObjectRequest;
-import com.google.gson.Gson;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import dev.stylesync.stylesync.MainActivity;
-import dev.stylesync.stylesync.data.ChatGPTData;
-import dev.stylesync.stylesync.data.DataCallback;
+import dev.stylesync.stylesync.data.StringCallback;
 
 public class ChatGPT {
-
-    public static void sendPrompt(MainActivity context, String prompt, final DataCallback callback) {
-
-        String url = Secrets.CHATGPT_API_URL;
-
+    public static JSONObject makeTextRequest(String prompt) {
         JSONObject jsonRequest = new JSONObject();
         try {
             jsonRequest.put("model", "gpt-3.5-turbo");
             jsonRequest.put("messages", new JSONArray().put(new JSONObject().put("role", "user").put("content", prompt)));
+            return jsonRequest;
         } catch (JSONException e) {
             e.printStackTrace();
-            callback.onError("Failed to create JSON request");
-            return;
         }
+        return null;
+    }
 
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, url, jsonRequest,
+    public static JSONObject makeImageRequest(String prompt, String imageURL) {
+        JSONObject jsonRequest = new JSONObject();
+        try {
+            jsonRequest.put("model", "gpt-4-turbo");
+            JSONArray content = new JSONArray();
+            content.put(new JSONObject().put("type", "text").put("text", prompt));
+            content.put(new JSONObject().put("type", "image_url").put("image_url", new JSONObject().put("url", imageURL)));
+            jsonRequest.put("messages", new JSONArray().put(new JSONObject().put("role", "user").put("content", content)));
+            return jsonRequest;
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public static void sendPrompt(MainActivity context, JSONObject JSONRequest, final StringCallback callback) {
+
+        String url = Secrets.CHATGPT_API_URL;
+
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, url, JSONRequest,
                 response -> {
-                    ChatGPTData data = new Gson().fromJson(response.toString(), ChatGPTData.class);
-                    if (data != null) {
-                        callback.onDataReceived(data);
+                    if (response != null) {
+                        callback.onStringReceived(getContent(response));
                     } else {
                         callback.onError("Failed to parse response");
                     }
@@ -47,5 +60,14 @@ public class ChatGPT {
         };
 
         context.volleyRequestQueue.add(jsonObjectRequest);
+    }
+
+    private static String getContent(JSONObject response) {
+        try {
+            return response.getJSONArray("choices").getJSONObject(0).getJSONObject("message").getString("content");
+        } catch (JSONException e) {
+            System.err.println("Invalid ChatGPT response");
+            return null;
+        }
     }
 }
