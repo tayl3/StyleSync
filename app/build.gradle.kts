@@ -23,37 +23,18 @@ android {
         val properties = Properties()
         properties.load(keystoreFile.inputStream())
 
-        val postgresPass = properties.getProperty("POSTGRES_PASS") ?: ""
-        val postgresUser = properties.getProperty("POSTGRES_USER") ?: ""
-        val postgresHost = properties.getProperty("POSTGRES_HOST") ?: ""
-        val postgresPort = properties.getProperty("POSTGRES_PORT") ?: ""
+//        val postgresPass = properties.getProperty("POSTGRES_PASS") ?: ""
+//        val postgresUser = properties.getProperty("POSTGRES_USER") ?: ""
+//        val postgresHost = properties.getProperty("POSTGRES_HOST") ?: ""
+//        val postgresPort = properties.getProperty("POSTGRES_PORT") ?: ""
+
+        val postgresUrl = properties.getProperty("POSTGRES_URL") ?: ""
 
         val weatherUrl = properties.getProperty("WEATHER_API_URL") ?: ""
         val weatherKey = properties.getProperty("WEATHER_API_KEY") ?: ""
         val chatGptUrl = properties.getProperty("CHATGPT_API_URL") ?: ""
         val chatGptKey = properties.getProperty("CHATGPT_API_KEY") ?: ""
         val imgbbKey = properties.getProperty("IMGBB_API_KEY") ?: ""
-
-        buildConfigField(
-                type = "String",
-                name = "POSTGRES_PASS",
-                value = postgresPass
-        )
-        buildConfigField(
-                type = "String",
-                name = "POSTGRES_USER",
-                value = postgresUser
-        )
-        buildConfigField(
-                type = "String",
-                name = "POSTGRES_HOST",
-                value = postgresHost
-        )
-        buildConfigField(
-                type = "String",
-                name = "POSTGRES_PORT",
-                value = postgresPort
-        )
 
         buildConfigField(
                 type = "String",
@@ -79,6 +60,11 @@ android {
                 type = "String",
                 name = "IMGBB_API_KEY",
                 value = imgbbKey
+        )
+        buildConfigField(
+                type = "String",
+                name = "POSTGRES_URL",
+                value = postgresUrl
         )
     }
 
