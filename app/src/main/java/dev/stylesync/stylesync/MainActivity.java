@@ -5,12 +5,15 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.util.Base64;
+import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
@@ -33,6 +36,7 @@ import dev.stylesync.stylesync.service.ImageService;
 import dev.stylesync.stylesync.service.PlanService;
 import dev.stylesync.stylesync.service.UserService;
 import dev.stylesync.stylesync.service.WeatherService;
+import dev.stylesync.stylesync.ui.settings.SettingsViewModel;
 import dev.stylesync.stylesync.utility.Database;
 
 public class MainActivity extends AppCompatActivity {
@@ -50,7 +54,6 @@ public class MainActivity extends AppCompatActivity {
     // States
     private boolean generatingPlan;
     private boolean detectingImage;
-
     public static final int REQUEST_CODE_CAPTURE_IMAGE = 1;
     public static final int PERMISSION_CODE_LOCATION = 1;
     public static final int PERMISSION_CODE_CAMERA = 2;
@@ -81,7 +84,6 @@ public class MainActivity extends AppCompatActivity {
         weatherService = new WeatherService(this);
         userService = new UserService(this);
         imageService = new ImageService(this);
-
         volleyRequestQueue = Volley.newRequestQueue(this);
     }
 

@@ -1,5 +1,7 @@
 package dev.stylesync.stylesync.utility;
 
+import android.util.Log;
+
 import java.sql.Array;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -33,7 +35,8 @@ public class Database {
                 checkAndCreateDatabase();
                 conn = DriverManager.getConnection(postgresUrl);
                 checkAndCreateTable();
-                initSampleUserData();
+                //initSampleUserData();
+                setUserData(userData);
                 status = true;
             } catch (Exception e) {
                 status = false;
@@ -122,12 +125,14 @@ public class Database {
         }
     }
 
-    public UserData getUserData() {
-        String sql = "SELECT clothes, favorite_colors, schedules FROM " + userDataTable + " WHERE id = 1";
+    public UserData getUserData(String userId) {
+        Log.d("getUserData", "Getting user data for userId: " + userId);
+        String sql = "SELECT clothes, favorite_colors, schedules FROM " + userDataTable + " WHERE id = " + userId;
 
         Thread thread = new Thread(() -> {
             UserData userData = new UserData();
             try {
+                Log.d("getUserData", "preparing statement: " + sql);
                 PreparedStatement stmt = conn.prepareStatement(sql);
                 ResultSet rs = stmt.executeQuery();
 
@@ -185,7 +190,7 @@ public class Database {
 
     private void initSampleUserData() {
         UserData userData = new UserData();
-        userData.getUserPreference().setFavoriteColors(Arrays.asList("red", "blue"));
+        userData.getUserPreference().setFavoriteColors(Arrays.asList("red","blue"));
         userData.getUserPreference().setSchedules(Arrays.asList("hiking"));
         userData.setClothes(Arrays.asList(
                 "Red T-shirt",

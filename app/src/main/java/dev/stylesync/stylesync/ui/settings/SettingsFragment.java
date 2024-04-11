@@ -40,6 +40,7 @@ import java.util.List;
 import dev.stylesync.stylesync.R;
 import dev.stylesync.stylesync.databinding.FragmentSettingsBinding;
 import dev.stylesync.stylesync.data.UserData;
+import dev.stylesync.stylesync.utility.Database;
 
 
 public class SettingsFragment extends Fragment {
@@ -51,8 +52,11 @@ public class SettingsFragment extends Fragment {
     private Button selectColorsButton;
     private Button selectActivitiesButton;
     private Button manualAddButton;
+    private Button savePreferences;
     private EditText inputClothes;
     private UserData userData;
+
+    private Database db;
 
 
     // See: https://developer.android.com/training/basics/intents/result
@@ -85,7 +89,19 @@ public class SettingsFragment extends Fragment {
         signInButton = root.findViewById(R.id.google_sign_in_button);
         signOutButton = root.findViewById(R.id.sign_out_button);
 
+        userData = new UserData();
+        db = new Database(); // used to save user preferences
+
+        // Add a Button that will open the multi-choice dialog when clicked
+        selectColorsButton = root.findViewById(R.id.select_colors_button);
+
+        selectActivitiesButton = root.findViewById(R.id.select_activities_button);
+
+        manualAddButton = root.findViewById(R.id.manual_entry_button);
+        inputClothes = root.findViewById(R.id.input_clothes);
+
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
         if (user != null) {
             signInButton.setVisibility(View.GONE);
             signOutButton.setVisibility(View.VISIBLE);
@@ -115,17 +131,6 @@ public class SettingsFragment extends Fragment {
                 signOutButton.setVisibility(View.GONE);
             }
         });
-
-        userData = new UserData();
-
-        // Add a Button that will open the multi-choice dialog when clicked
-        selectColorsButton = root.findViewById(R.id.select_colors_button);
-
-        selectActivitiesButton = root.findViewById(R.id.select_activities_button);
-
-        manualAddButton = root.findViewById(R.id.manual_entry_button);
-        inputClothes = root.findViewById(R.id.input_clothes);
-
 
         selectColorsButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -199,10 +204,20 @@ public class SettingsFragment extends Fragment {
             public void onClick(View v) {
                 String clothingItem = inputClothes.getText().toString();
                 // Add the user input to the clothes list
-                userData.getClothes().add(clothingItem);
+                List<String> clothes = userData.getClothes();
+                clothes.add(clothingItem);
+                userData.setClothes(clothes);
                 inputClothes.setText(""); // Clear the EditText
             }
         });
+
+        savePreferences.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+               db.setUserData(userData);
+            }
+        });
+
 
         return root;
     }
