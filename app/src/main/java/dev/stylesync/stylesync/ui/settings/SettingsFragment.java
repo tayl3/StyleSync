@@ -2,12 +2,16 @@ package dev.stylesync.stylesync.ui.settings;
 
 import static android.app.Activity.RESULT_OK;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
@@ -28,11 +32,13 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import dev.stylesync.stylesync.R;
 import dev.stylesync.stylesync.databinding.FragmentSettingsBinding;
+import dev.stylesync.stylesync.data.UserData;
 
 
 public class SettingsFragment extends Fragment {
@@ -41,6 +47,11 @@ public class SettingsFragment extends Fragment {
     private SettingsViewModel settingsViewModel;
     private ImageButton signInButton;
     private ImageButton signOutButton;
+    private Button selectColorsButton;
+
+    // Define the colors and their names
+    final int[] colors = new int[]{Color.RED, Color.GREEN, Color.BLUE, Color.YELLOW, Color.MAGENTA}; // Add more colors as needed
+    final String[] colorNames = new String[]{"Red", "Green", "Blue", "Yellow", "Magenta"}; // Add more color names as needed
 
     // See: https://developer.android.com/training/basics/intents/result
     private final ActivityResultLauncher<Intent> signInLauncher = registerForActivityResult(
@@ -100,6 +111,45 @@ public class SettingsFragment extends Fragment {
                 signOut();
                 signInButton.setVisibility(View.VISIBLE);
                 signOutButton.setVisibility(View.GONE);
+            }
+        });
+
+        // Add a Button that will open the multi-choice dialog when clicked
+        selectColorsButton = root.findViewById(R.id.select_colors_button);
+
+        selectColorsButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Create the multi-choice dialog inside the Button's onClick method
+                String[] colorOptions = getResources().getStringArray(R.array.color_options);
+                boolean[] checkedColors = new boolean[colorOptions.length]; // This will keep track of which colors are selected
+
+                new AlertDialog.Builder(requireContext())
+                    .setTitle("Select Colors")
+                    .setMultiChoiceItems(colorOptions, checkedColors, new DialogInterface.OnMultiChoiceClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which, boolean isChecked) {
+                            checkedColors[which] = isChecked;
+                        }
+                    })
+                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            // When the user closes the dialog, update the favoriteColors in the userData object in your SettingsViewModel with the selected colors
+                            List<String> selectedColors = new ArrayList<>();
+                            for (int i = 0; i < checkedColors.length; i++) {
+                                if (checkedColors[i]) {
+                                    selectedColors.add(colorOptions[i]);
+                                }
+                            }
+                            // Get the current user data
+                            UserData userData = new UserData();
+                            // Update the favorite colors in the user preference
+                            userData.getUserPreference().setFavoriteColors(selectedColors);
+                        }
+                    })
+                    .setNegativeButton("Cancel", null)
+                    .show();
             }
         });
 
