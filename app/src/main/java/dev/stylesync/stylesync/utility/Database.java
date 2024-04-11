@@ -12,6 +12,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import dev.stylesync.stylesync.BuildConfig;
 import dev.stylesync.stylesync.data.UserData;
@@ -150,12 +151,18 @@ public class Database {
                     Array colorsArray = rs.getArray("favorite_colors");
                     Array schedulesArray = rs.getArray("schedules");
 
-                    if (clothesArray != null)
-                        userData.setClothes(Arrays.asList((String[]) clothesArray.getArray()));
-                    if (colorsArray != null)
-                        userData.getUserPreference().setFavoriteColors(Arrays.asList((String[]) colorsArray.getArray()));
-                    if (schedulesArray != null)
-                        userData.getUserPreference().setSchedules(Arrays.asList((String[]) schedulesArray.getArray()));
+                    if (clothesArray != null) {
+                        List<String> clothes = new ArrayList<>(Arrays.asList((String[]) clothesArray.getArray()));
+                        userData.setClothes(clothes);
+                    }
+                    if (colorsArray != null) {
+                        List<String> colors = new ArrayList<>(Arrays.asList((String[]) colorsArray.getArray()));
+                        userData.getUserPreference().setFavoriteColors(colors);
+                    }
+                    if (schedulesArray != null) {
+                        List<String> schedules = new ArrayList<>(Arrays.asList((String[]) schedulesArray.getArray()));
+                        userData.getUserPreference().setSchedules(schedules);
+                    }
                 } else {
                     // User does not exist, create a new user
                     userData.setClothes(new ArrayList<>());
