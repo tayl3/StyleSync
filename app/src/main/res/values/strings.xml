@@ -17,4 +17,14 @@
         <item>White</item>
         <item>Gray</item>
     </string-array>
+    <string-array name="activities_options">
+        <item>Soccer</item>
+        <item>Bike</item>
+        <item>Study</item>
+        <item>Sleep</item>
+        <item>Walk</item>
+        <item>Run</item>
+        <item>Dance</item>
+        <item>Football</item>
+    </string-array>
 </resources>

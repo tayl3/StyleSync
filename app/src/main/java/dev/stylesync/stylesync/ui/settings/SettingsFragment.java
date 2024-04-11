@@ -48,6 +48,8 @@ public class SettingsFragment extends Fragment {
     private ImageButton signInButton;
     private ImageButton signOutButton;
     private Button selectColorsButton;
+    private Button selectActivitiesButton;
+    private UserData userData;
 
     // Define the colors and their names
     final int[] colors = new int[]{Color.RED, Color.GREEN, Color.BLUE, Color.YELLOW, Color.MAGENTA}; // Add more colors as needed
@@ -114,8 +116,12 @@ public class SettingsFragment extends Fragment {
             }
         });
 
+        userData = new UserData();
+
         // Add a Button that will open the multi-choice dialog when clicked
         selectColorsButton = root.findViewById(R.id.select_colors_button);
+
+        selectActivitiesButton = root.findViewById(R.id.select_activities_button);
 
         selectColorsButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -142,8 +148,6 @@ public class SettingsFragment extends Fragment {
                                     selectedColors.add(colorOptions[i]);
                                 }
                             }
-                            // Get the current user data
-                            UserData userData = new UserData();
                             // Update the favorite colors in the user preference
                             userData.getUserPreference().setFavoriteColors(selectedColors);
                         }
@@ -152,6 +156,40 @@ public class SettingsFragment extends Fragment {
                     .show();
             }
         });
+
+        selectActivitiesButton.setOnClickListener(new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            // Create the multi-choice dialog inside the Button's onClick method
+            String[] activityOptions = getResources().getStringArray(R.array.activities_options);
+            boolean[] checkedActivities = new boolean[activityOptions.length]; // This will keep track of which activities are selected
+
+            new AlertDialog.Builder(requireContext())
+                .setTitle("Select Activities")
+                .setMultiChoiceItems(activityOptions, checkedActivities, new DialogInterface.OnMultiChoiceClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which, boolean isChecked) {
+                        checkedActivities[which] = isChecked;
+                    }
+                })
+                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        // When the user closes the dialog, update the schedules in the userData object with the selected activities
+                        List<String> selectedActivities = new ArrayList<>();
+                        for (int i = 0; i < checkedActivities.length; i++) {
+                            if (checkedActivities[i]) {
+                                selectedActivities.add(activityOptions[i]);
+                            }
+                        }
+                        // Update the schedules in the user data
+                        userData.getUserPreference().setSchedules(selectedActivities);
+                }
+            })
+            .setNegativeButton("Cancel", null)
+            .show();
+        }
+    });
 
         return root;
     }
