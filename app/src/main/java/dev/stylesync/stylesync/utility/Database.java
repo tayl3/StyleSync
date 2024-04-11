@@ -10,6 +10,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.Arrays;
 
 import dev.stylesync.stylesync.BuildConfig;
@@ -22,10 +23,18 @@ public class Database {
     private Connection conn;
     private boolean status;
     private UserData userData;
+    private static Database db_instance = null;
 
     public Database() {
         connect();
         System.out.println("Database connection: " + status);
+    }
+
+    public static synchronized Database getInstance() {
+        if(db_instance == null) {
+            db_instance = new Database();
+        }
+        return db_instance;
     }
 
     private void connect() {
@@ -36,7 +45,6 @@ public class Database {
                 conn = DriverManager.getConnection(postgresUrl);
                 checkAndCreateTable();
                 //initSampleUserData();
-                setUserData(userData);
                 status = true;
             } catch (Exception e) {
                 status = false;
@@ -73,7 +81,7 @@ public class Database {
     }
 
     private void checkAndCreateTable() {
-        String sql = "CREATE TABLE " + userDataTable + " (id SERIAL PRIMARY KEY, clothes TEXT[], favorite_colors TEXT[], schedules TEXT[])";
+        String sql = "CREATE TABLE " + userDataTable + " (id VARCHAR PRIMARY KEY, clothes TEXT[], favorite_colors TEXT[], schedules TEXT[])";
 
         try {
             DatabaseMetaData dbm = conn.getMetaData();
@@ -96,7 +104,7 @@ public class Database {
     }
 
     public void setUserData(UserData userData) {
-        String sql = "INSERT INTO " + userDataTable + " (id, clothes, favorite_colors, schedules) VALUES (1, ?, ?, ?) " +
+        String sql = "INSERT INTO " + userDataTable + " (id, clothes, favorite_colors, schedules) VALUES ('" + userData.getUserId() + "', ?, ?, ?) " +
                 "ON CONFLICT (id) DO UPDATE SET clothes = EXCLUDED.clothes, favorite_colors = EXCLUDED.favorite_colors, schedules = EXCLUDED.schedules";
 
         Thread thread = new Thread(() -> {
@@ -127,10 +135,11 @@ public class Database {
 
     public UserData getUserData(String userId) {
         Log.d("getUserData", "Getting user data for userId: " + userId);
-        String sql = "SELECT clothes, favorite_colors, schedules FROM " + userDataTable + " WHERE id = " + userId;
+        String sql = "SELECT clothes, favorite_colors, schedules FROM " + userDataTable + " WHERE id = '" + userId + "';";
 
         Thread thread = new Thread(() -> {
             UserData userData = new UserData();
+            userData.setUserId(userId);
             try {
                 Log.d("getUserData", "preparing statement: " + sql);
                 PreparedStatement stmt = conn.prepareStatement(sql);
@@ -147,6 +156,12 @@ public class Database {
                         userData.getUserPreference().setFavoriteColors(Arrays.asList((String[]) colorsArray.getArray()));
                     if (schedulesArray != null)
                         userData.getUserPreference().setSchedules(Arrays.asList((String[]) schedulesArray.getArray()));
+                } else {
+                    // User does not exist, create a new user
+                    userData.setClothes(new ArrayList<>());
+                    userData.getUserPreference().setFavoriteColors(new ArrayList<>());
+                    userData.getUserPreference().setSchedules(new ArrayList<>());
+                    setUserData(userData);
                 }
                 this.userData = userData;
             } catch (Exception e) {

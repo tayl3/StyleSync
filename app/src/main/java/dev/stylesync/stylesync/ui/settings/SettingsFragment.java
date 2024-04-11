@@ -37,9 +37,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import dev.stylesync.stylesync.MainActivity;
 import dev.stylesync.stylesync.R;
 import dev.stylesync.stylesync.databinding.FragmentSettingsBinding;
 import dev.stylesync.stylesync.data.UserData;
+import dev.stylesync.stylesync.service.UserService;
 import dev.stylesync.stylesync.utility.Database;
 
 
@@ -55,8 +57,8 @@ public class SettingsFragment extends Fragment {
     private Button savePreferences;
     private EditText inputClothes;
     private UserData userData;
-
     private Database db;
+    private UserService userService;
 
 
     // See: https://developer.android.com/training/basics/intents/result
@@ -89,8 +91,9 @@ public class SettingsFragment extends Fragment {
         signInButton = root.findViewById(R.id.google_sign_in_button);
         signOutButton = root.findViewById(R.id.sign_out_button);
 
-        userData = new UserData();
-        db = new Database(); // used to save user preferences
+        db = Database.getInstance(); // used to save user preferences
+        userService = UserService.getInstance((MainActivity) getActivity());
+        userData = userService.getUserData();
 
         // Add a Button that will open the multi-choice dialog when clicked
         selectColorsButton = root.findViewById(R.id.select_colors_button);
@@ -100,6 +103,7 @@ public class SettingsFragment extends Fragment {
         manualAddButton = root.findViewById(R.id.manual_entry_button);
         inputClothes = root.findViewById(R.id.input_clothes);
 
+        savePreferences = root.findViewById(R.id.save_preferences_button);
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
         if (user != null) {
@@ -135,9 +139,16 @@ public class SettingsFragment extends Fragment {
         selectColorsButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // Create the multi-choice dialog inside the Button's onClick method
                 String[] colorOptions = getResources().getStringArray(R.array.color_options);
                 boolean[] checkedColors = new boolean[colorOptions.length]; // This will keep track of which colors are selected
+
+                // Initialize checkedColors based on user's current preferences
+                List<String> favoriteColors = userData.getUserPreference().getFavoriteColors();
+                for (int i = 0; i < colorOptions.length; i++) {
+                    if (favoriteColors.contains(colorOptions[i])) {
+                        checkedColors[i] = true;
+                    }
+                }
 
                 new AlertDialog.Builder(requireContext())
                     .setTitle("Select Colors")
@@ -150,15 +161,52 @@ public class SettingsFragment extends Fragment {
                     .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            // When the user closes the dialog, update the favoriteColors in the userData object in your SettingsViewModel with the selected colors
                             List<String> selectedColors = new ArrayList<>();
                             for (int i = 0; i < checkedColors.length; i++) {
                                 if (checkedColors[i]) {
                                     selectedColors.add(colorOptions[i]);
                                 }
                             }
-                            // Update the favorite colors in the user preference
                             userData.getUserPreference().setFavoriteColors(selectedColors);
+                        }
+                    })
+                    .setNegativeButton("Cancel", null)
+                    .show();
+                }
+            });
+
+        selectActivitiesButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String[] activityOptions = getResources().getStringArray(R.array.activities_options);
+                boolean[] checkedActivities = new boolean[activityOptions.length]; // This will keep track of which activities are selected
+
+                // Initialize checkedActivities based on user's current preferences
+                List<String> schedules = userData.getUserPreference().getSchedules();
+                for (int i = 0; i < activityOptions.length; i++) {
+                    if (schedules.contains(activityOptions[i])) {
+                        checkedActivities[i] = true;
+                    }
+                }
+
+                new AlertDialog.Builder(requireContext())
+                    .setTitle("Select Activities")
+                    .setMultiChoiceItems(activityOptions, checkedActivities, new DialogInterface.OnMultiChoiceClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which, boolean isChecked) {
+                            checkedActivities[which] = isChecked;
+                        }
+                    })
+                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            List<String> selectedActivities = new ArrayList<>();
+                            for (int i = 0; i < checkedActivities.length; i++) {
+                                if (checkedActivities[i]) {
+                                    selectedActivities.add(activityOptions[i]);
+                                }
+                            }
+                            userData.getUserPreference().setSchedules(selectedActivities);
                         }
                     })
                     .setNegativeButton("Cancel", null)
@@ -166,39 +214,6 @@ public class SettingsFragment extends Fragment {
             }
         });
 
-        selectActivitiesButton.setOnClickListener(new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            // Create the multi-choice dialog inside the Button's onClick method
-            String[] activityOptions = getResources().getStringArray(R.array.activities_options);
-            boolean[] checkedActivities = new boolean[activityOptions.length]; // This will keep track of which activities are selected
-
-            new AlertDialog.Builder(requireContext())
-                .setTitle("Select Activities")
-                .setMultiChoiceItems(activityOptions, checkedActivities, new DialogInterface.OnMultiChoiceClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which, boolean isChecked) {
-                        checkedActivities[which] = isChecked;
-                    }
-                })
-                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        // When the user closes the dialog, update the schedules in the userData object with the selected activities
-                        List<String> selectedActivities = new ArrayList<>();
-                        for (int i = 0; i < checkedActivities.length; i++) {
-                            if (checkedActivities[i]) {
-                                selectedActivities.add(activityOptions[i]);
-                            }
-                        }
-                        // Update the schedules in the user data
-                        userData.getUserPreference().setSchedules(selectedActivities);
-                }
-            })
-            .setNegativeButton("Cancel", null)
-            .show();
-            }
-        });
         manualAddButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -217,7 +232,6 @@ public class SettingsFragment extends Fragment {
                db.setUserData(userData);
             }
         });
-
 
         return root;
     }

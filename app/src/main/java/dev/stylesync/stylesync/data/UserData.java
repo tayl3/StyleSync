@@ -4,8 +4,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class UserData implements Data {
+    private String userId;
     private List<String> clothes = new ArrayList<>();
     private UserPreference userPreference = new UserPreference();
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
 
     public List<String> getClothes() {
         return clothes;

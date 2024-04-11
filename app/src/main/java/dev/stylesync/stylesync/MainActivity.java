@@ -77,7 +77,7 @@ public class MainActivity extends AppCompatActivity {
         requestPermission();
 
         // Database
-        database = new Database();
+        database = Database.getInstance();
 
         // Initialize Services
         planService = new PlanService(this);
@@ -85,6 +85,8 @@ public class MainActivity extends AppCompatActivity {
         userService = new UserService(this);
         imageService = new ImageService(this);
         volleyRequestQueue = Volley.newRequestQueue(this);
+
+
     }
 
     public void generatePlan(View view) {

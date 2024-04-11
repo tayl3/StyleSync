@@ -15,6 +15,13 @@ public class UserService implements Service {
     private final UserData userData;
     private final SettingsViewModel settingsViewModel = new SettingsViewModel();
 
+    private static UserService user_instance = null;
+    public static synchronized UserService getInstance(MainActivity context) {
+        if(user_instance == null) {
+            user_instance = new UserService(context);
+        }
+        return user_instance;
+    }
 
     public UserService(MainActivity context) {
         this.database = context.database;
