@@ -12,6 +12,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
@@ -49,11 +50,10 @@ public class SettingsFragment extends Fragment {
     private ImageButton signOutButton;
     private Button selectColorsButton;
     private Button selectActivitiesButton;
+    private Button manualAddButton;
+    private EditText inputClothes;
     private UserData userData;
 
-    // Define the colors and their names
-    final int[] colors = new int[]{Color.RED, Color.GREEN, Color.BLUE, Color.YELLOW, Color.MAGENTA}; // Add more colors as needed
-    final String[] colorNames = new String[]{"Red", "Green", "Blue", "Yellow", "Magenta"}; // Add more color names as needed
 
     // See: https://developer.android.com/training/basics/intents/result
     private final ActivityResultLauncher<Intent> signInLauncher = registerForActivityResult(
@@ -123,6 +123,10 @@ public class SettingsFragment extends Fragment {
 
         selectActivitiesButton = root.findViewById(R.id.select_activities_button);
 
+        manualAddButton = root.findViewById(R.id.manual_entry_button);
+        inputClothes = root.findViewById(R.id.input_clothes);
+
+
         selectColorsButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -188,8 +192,17 @@ public class SettingsFragment extends Fragment {
             })
             .setNegativeButton("Cancel", null)
             .show();
-        }
-    });
+            }
+        });
+        manualAddButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String clothingItem = inputClothes.getText().toString();
+                // Add the user input to the clothes list
+                userData.getClothes().add(clothingItem);
+                inputClothes.setText(""); // Clear the EditText
+            }
+        });
 
         return root;
     }

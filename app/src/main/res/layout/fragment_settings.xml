@@ -9,23 +9,60 @@
 
     <Button
         android:id="@+id/select_colors_button"
-        android:layout_width="199dp"
-        android:layout_height="47dp"
-        android:layout_marginEnd="104dp"
-        android:layout_marginBottom="500dp"
+        android:layout_width="208dp"
+        android:layout_height="53dp"
+        android:layout_marginStart="100dp"
+        android:layout_marginEnd="100dp"
+        android:layout_marginBottom="520dp"
         android:text="Select Colors"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
     <Button
         android:id="@+id/select_activities_button"
-        android:layout_width="197dp"
-        android:layout_height="47dp"
-        android:layout_marginEnd="104dp"
-        android:layout_marginBottom="440dp"
+        android:layout_width="202dp"
+        android:layout_height="51dp"
+        android:layout_marginStart="100dp"
+        android:layout_marginEnd="100dp"
+        android:layout_marginBottom="432dp"
         android:text="Select Activities"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/select_colors_button"
+        app:layout_constraintVertical_bias="0.666" />
+
+    <EditText
+        android:id="@+id/input_clothes"
+        android:layout_width="202dp"
+        android:layout_height="55dp"
+        android:layout_marginStart="100dp"
+        android:layout_marginEnd="100dp"
+        android:layout_marginBottom="356dp"
+        android:background="@null"
+        android:gravity="center"
+        android:hint="Manual Entry"
+        android:maxLength="20"
+        android:maxLines="1"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.573"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/select_activities_button"
+        app:layout_constraintVertical_bias="1.0" />
+
+    <Button
+        android:id="@+id/manual_entry_button"
+        android:layout_width="205dp"
+        android:layout_height="61dp"
+        android:layout_marginEnd="100dp"
+        android:layout_marginBottom="292dp"
+        android:text="Add to Wardrobe"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/select_activities_button"
+        app:layout_constraintVertical_bias="0.967" />
 
     <ImageButton
         android:id="@+id/sign_out_button"
@@ -57,13 +94,15 @@
         android:textSize="20sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.711" />
 
     <ImageButton
         android:id="@+id/google_sign_in_button"
-        android:layout_width="201dp"
-        android:layout_height="61dp"
+        android:layout_width="184dp"
+        android:layout_height="50dp"
         android:layout_marginBottom="128dp"
         android:background="@drawable/google_sign_in"
         android:onClick="onGoogleSignInClicked"
