@@ -21,6 +21,7 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
@@ -136,6 +137,19 @@ public class SettingsFragment extends Fragment {
             }
         });
 
+        settingsViewModel.getUserId().observe(getViewLifecycleOwner(), new Observer<String>() {
+            @Override
+            public void onChanged(@Nullable String userId) {
+                // Update user data when userId changes
+                userService.updateUserData();
+                userData = userService.getUserData();
+
+                // Update checked boxes in selectColorsButton dialog
+                updateColorSelection();
+                updateActivitySelection();
+            }
+        });
+
         selectColorsButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -151,29 +165,29 @@ public class SettingsFragment extends Fragment {
                 }
 
                 new AlertDialog.Builder(requireContext())
-                    .setTitle("Select Colors")
-                    .setMultiChoiceItems(colorOptions, checkedColors, new DialogInterface.OnMultiChoiceClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which, boolean isChecked) {
-                            checkedColors[which] = isChecked;
-                        }
-                    })
-                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            List<String> selectedColors = new ArrayList<>();
-                            for (int i = 0; i < checkedColors.length; i++) {
-                                if (checkedColors[i]) {
-                                    selectedColors.add(colorOptions[i]);
-                                }
+                        .setTitle("Select Colors")
+                        .setMultiChoiceItems(colorOptions, checkedColors, new DialogInterface.OnMultiChoiceClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which, boolean isChecked) {
+                                checkedColors[which] = isChecked;
                             }
-                            userData.getUserPreference().setFavoriteColors(selectedColors);
-                        }
-                    })
-                    .setNegativeButton("Cancel", null)
-                    .show();
-                }
-            });
+                        })
+                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                List<String> selectedColors = new ArrayList<>();
+                                for (int i = 0; i < checkedColors.length; i++) {
+                                    if (checkedColors[i]) {
+                                        selectedColors.add(colorOptions[i]);
+                                    }
+                                }
+                                userData.getUserPreference().setFavoriteColors(selectedColors);
+                            }
+                        })
+                        .setNegativeButton("Cancel", null)
+                        .show();
+            }
+        });
 
         selectActivitiesButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -190,27 +204,27 @@ public class SettingsFragment extends Fragment {
                 }
 
                 new AlertDialog.Builder(requireContext())
-                    .setTitle("Select Activities")
-                    .setMultiChoiceItems(activityOptions, checkedActivities, new DialogInterface.OnMultiChoiceClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which, boolean isChecked) {
-                            checkedActivities[which] = isChecked;
-                        }
-                    })
-                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            List<String> selectedActivities = new ArrayList<>();
-                            for (int i = 0; i < checkedActivities.length; i++) {
-                                if (checkedActivities[i]) {
-                                    selectedActivities.add(activityOptions[i]);
-                                }
+                        .setTitle("Select Activities")
+                        .setMultiChoiceItems(activityOptions, checkedActivities, new DialogInterface.OnMultiChoiceClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which, boolean isChecked) {
+                                checkedActivities[which] = isChecked;
                             }
-                            userData.getUserPreference().setSchedules(selectedActivities);
-                        }
-                    })
-                    .setNegativeButton("Cancel", null)
-                    .show();
+                        })
+                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                List<String> selectedActivities = new ArrayList<>();
+                                for (int i = 0; i < checkedActivities.length; i++) {
+                                    if (checkedActivities[i]) {
+                                        selectedActivities.add(activityOptions[i]);
+                                    }
+                                }
+                                userData.getUserPreference().setSchedules(selectedActivities);
+                            }
+                        })
+                        .setNegativeButton("Cancel", null)
+                        .show();
             }
         });
 
@@ -218,8 +232,12 @@ public class SettingsFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 String clothingItem = inputClothes.getText().toString();
+                if(clothingItem.isEmpty()) {
+                    return;
+                }
                 // Add the user input to the clothes list
                 List<String> clothes = userData.getClothes();
+
                 clothes.add(clothingItem);
                 userData.setClothes(clothes);
                 inputClothes.setText(""); // Clear the EditText
@@ -229,7 +247,7 @@ public class SettingsFragment extends Fragment {
         savePreferences.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-               db.setUserData(userData);
+                db.setUserData(userData);
             }
         });
 
@@ -255,6 +273,7 @@ public class SettingsFragment extends Fragment {
     private void onSignInResult(FirebaseAuthUIAuthenticationResult result) {
         IdpResponse response = result.getIdpResponse();
         if (result.getResultCode() == RESULT_OK) {
+            userService.updateUserData();
             // Successfully signed in
             FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
             settingsViewModel.setAuthenticated(true);
@@ -273,6 +292,7 @@ public class SettingsFragment extends Fragment {
             NavController navController = NavHostFragment.findNavController(this);
             navController.navigate(R.id.action_settings_to_home);
         } else {
+            userService.updateUserData();
             // Sign in failed. If response is null the user canceled the
             // sign-in flow using the back button. Otherwise check
             // response.getError().getErrorCode() and handle the error.
@@ -299,11 +319,94 @@ public class SettingsFragment extends Fragment {
                         settingsViewModel.setUsername("GUEST");
                         settingsViewModel.setUserId("NULL");
                         settingsViewModel.setAuthenticated(false);
+                        userService.updateUserData();
                         if (binding != null) {
                             final TextView welcomeTextView = binding.welcomeTextView;
                             welcomeTextView.setText("Welcome, GUEST!");
                         }
                     }
                 });
+    }
+
+    private void updateColorSelection() {
+        String[] colorOptions = getResources().getStringArray(R.array.color_options);
+        boolean[] checkedColors = new boolean[colorOptions.length]; // This will keep track of which colors are selected
+
+        // Initialize checkedColors based on user's current preferences
+        List<String> favoriteColors = userData.getUserPreference().getFavoriteColors();
+        for (int i = 0; i < colorOptions.length; i++) {
+            if (favoriteColors.contains(colorOptions[i])) {
+                checkedColors[i] = true;
+            }
+        }
+
+        selectColorsButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new AlertDialog.Builder(requireContext())
+                        .setTitle("Select Colors")
+                        .setMultiChoiceItems(colorOptions, checkedColors, new DialogInterface.OnMultiChoiceClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which, boolean isChecked) {
+                                checkedColors[which] = isChecked;
+                            }
+                        })
+                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                List<String> selectedColors = new ArrayList<>();
+                                for (int i = 0; i < checkedColors.length; i++) {
+                                    if (checkedColors[i]) {
+                                        selectedColors.add(colorOptions[i]);
+                                    }
+                                }
+                                userData.getUserPreference().setFavoriteColors(selectedColors);
+                            }
+                        })
+                        .setNegativeButton("Cancel", null)
+                        .show();
+            }
+        });
+    }
+
+    private void updateActivitySelection() {
+        String[] activityOptions = getResources().getStringArray(R.array.activities_options);
+        boolean[] checkedActivities = new boolean[activityOptions.length]; // This will keep track of which activities are selected
+
+        // Initialize checkedActivities based on user's current preferences
+        List<String> schedules = userData.getUserPreference().getSchedules();
+        for (int i = 0; i < activityOptions.length; i++) {
+            if (schedules.contains(activityOptions[i])) {
+                checkedActivities[i] = true;
+            }
+        }
+
+        selectActivitiesButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new AlertDialog.Builder(requireContext())
+                        .setTitle("Select Activities")
+                        .setMultiChoiceItems(activityOptions, checkedActivities, new DialogInterface.OnMultiChoiceClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which, boolean isChecked) {
+                                checkedActivities[which] = isChecked;
+                            }
+                        })
+                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                List<String> selectedActivities = new ArrayList<>();
+                                for (int i = 0; i < checkedActivities.length; i++) {
+                                    if (checkedActivities[i]) {
+                                        selectedActivities.add(activityOptions[i]);
+                                    }
+                                }
+                                userData.getUserPreference().setSchedules(selectedActivities);
+                            }
+                        })
+                        .setNegativeButton("Cancel", null)
+                        .show();
+            }
+        });
     }
 }

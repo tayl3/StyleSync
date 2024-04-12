@@ -9,8 +9,9 @@
 
     <Button
         android:id="@+id/select_colors_button"
-        android:layout_width="208dp"
-        android:layout_height="53dp"
+        android:layout_width="170dp"
+        android:layout_height="55dp"
+        android:textSize="14sp"
         android:layout_marginStart="100dp"
         android:layout_marginEnd="100dp"
         android:layout_marginBottom="520dp"
@@ -21,21 +22,23 @@
 
     <Button
         android:id="@+id/select_activities_button"
-        android:layout_width="202dp"
-        android:layout_height="51dp"
+        android:layout_width="170dp"
+        android:layout_height="55dp"
         android:layout_marginStart="100dp"
         android:layout_marginEnd="100dp"
         android:layout_marginBottom="432dp"
         android:text="Select Activities"
+        android:textSize="14sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.512"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/select_colors_button"
-        app:layout_constraintVertical_bias="0.666" />
+        app:layout_constraintVertical_bias="0.437" />
 
     <EditText
         android:id="@+id/input_clothes"
-        android:layout_width="202dp"
+        android:layout_width="170dp"
         android:layout_height="55dp"
         android:layout_marginStart="100dp"
         android:layout_marginEnd="100dp"
@@ -45,39 +48,46 @@
         android:hint="Manual Entry"
         android:maxLength="20"
         android:maxLines="1"
+        android:textSize="14sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.573"
+        app:layout_constraintHorizontal_bias="0.487"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/select_activities_button"
-        app:layout_constraintVertical_bias="1.0" />
+        app:layout_constraintVertical_bias="0.589" />
 
     <Button
         android:id="@+id/manual_entry_button"
-        android:layout_width="205dp"
-        android:layout_height="61dp"
+        android:layout_width="170dp"
+        android:layout_height="55dp"
+        android:layout_marginStart="100dp"
         android:layout_marginEnd="100dp"
         android:layout_marginBottom="292dp"
         android:text="Add to Wardrobe"
+        android:textSize="14sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.487"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/select_activities_button"
-        app:layout_constraintVertical_bias="0.967" />
+        app:layout_constraintVertical_bias="0.757" />
 
     <Button
         android:id="@+id/save_preferences_button"
-        android:layout_width="208dp"
-        android:layout_height="53dp"
+        android:layout_width="188dp"
+        android:layout_height="75dp"
         android:layout_marginStart="100dp"
         android:layout_marginTop="30dp"
         android:layout_marginEnd="100dp"
         android:layout_marginBottom="212dp"
         android:text="Save Preferences"
+        android:textSize="14sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.333"
+        app:layout_constraintHorizontal_bias="0.434"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/manual_entry_button" />
+        app:layout_constraintTop_toBottomOf="@+id/manual_entry_button"
+        app:layout_constraintVertical_bias="0.0" />
 
     <ImageButton
         android:id="@+id/sign_out_button"
@@ -109,10 +119,10 @@
         android:textSize="20sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.169" />
+        app:layout_constraintVertical_bias="0.129" />
 
     <ImageButton
         android:id="@+id/google_sign_in_button"

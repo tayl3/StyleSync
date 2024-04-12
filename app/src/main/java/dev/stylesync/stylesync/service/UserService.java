@@ -3,6 +3,8 @@ package dev.stylesync.stylesync.service;
 import android.provider.Settings;
 import android.util.Log;
 
+import com.google.firebase.auth.FirebaseAuth;
+
 import java.util.List;
 
 import dev.stylesync.stylesync.MainActivity;
@@ -12,7 +14,8 @@ import dev.stylesync.stylesync.utility.Database;
 
 public class UserService implements Service {
     private final Database database;
-    private final UserData userData;
+    private UserData userData;
+    private final MainActivity context;
     private final SettingsViewModel settingsViewModel = new SettingsViewModel();
 
     private static UserService user_instance = null;
@@ -24,9 +27,14 @@ public class UserService implements Service {
     }
 
     public UserService(MainActivity context) {
+        this.context = context;
         this.database = context.database;
+        updateUserData();
+    }
 
-        String googleId = settingsViewModel.getUserId().getValue();
+    public void updateUserData() {
+        String googleId = FirebaseAuth.getInstance().getCurrentUser() != null ? FirebaseAuth.getInstance().getCurrentUser().getUid() : null;
+        //Log.d("GoogleID", googleId);
 
         if (googleId != null) {
             this.userData = database.getUserData(googleId);
