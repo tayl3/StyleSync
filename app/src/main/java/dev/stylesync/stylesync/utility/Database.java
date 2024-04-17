@@ -105,6 +105,7 @@ public class Database {
     }
 
     public void setUserData(UserData userData) {
+
         String sql = "INSERT INTO " + userDataTable + " (id, clothes, favorite_colors, schedules) VALUES ('" + userData.getUserId() + "', ?, ?, ?) " +
                 "ON CONFLICT (id) DO UPDATE SET clothes = EXCLUDED.clothes, favorite_colors = EXCLUDED.favorite_colors, schedules = EXCLUDED.schedules";
 

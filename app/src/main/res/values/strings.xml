@@ -5,6 +5,7 @@
     <string name="title_settings">Settings</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="default_web_client_id" translatable="false">webClientId.apps.googleusercontent.com</string>
+
     <string-array name="color_options">
         <item>Red</item>
         <item>Orange</item>
@@ -27,4 +28,7 @@
         <item>Dance</item>
         <item>Football</item>
     </string-array>
+
+    <string name="google_sign_in">Sign in with Google</string>
+    <string name="home_default">Please Generate a Plan</string>
 </resources>
