@@ -137,6 +137,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void onImageReceived(String imageBase64){
+        showPlanText();
         setPlanText("Detecting Clothing Item...");
         imageService.uploadImage(imageBase64, new DataCallback() {
             @Override

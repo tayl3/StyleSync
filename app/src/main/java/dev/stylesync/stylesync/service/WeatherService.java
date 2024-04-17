@@ -72,7 +72,6 @@ public class WeatherService implements Service {
         try {
             JSONObject obj = new JSONObject(JSONData);
             WeatherData data = new WeatherData();
-            // Correcting the method calls as per your structure
             data.getTemperature().setTemp(obj.getJSONObject("main").getDouble("temp"));
             data.getTemperature().setTempFeelsLike(obj.getJSONObject("main").getDouble("feels_like"));
             data.getTemperature().setTempMin(obj.getJSONObject("main").getDouble("temp_min"));
