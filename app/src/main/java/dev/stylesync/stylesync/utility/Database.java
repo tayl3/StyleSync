@@ -93,7 +93,7 @@ public class Database {
     }
 
     public void setUserData(UserData userData) {
-        String sql = "INSERT INTO " + userDataTable + " (id, clothes, favorite_colors, schedules) VALUES (1, ?, ?, ?) " +
+        String sql = "INSERT INTO " + userDataTable + " (id, clothes, favorite_colors, schedules) VALUES ('1', ?, ?, ?) " +
                 "ON CONFLICT (id) DO UPDATE SET clothes = EXCLUDED.clothes, favorite_colors = EXCLUDED.favorite_colors, schedules = EXCLUDED.schedules";
 
         Thread thread = new Thread(() -> {
@@ -123,7 +123,7 @@ public class Database {
     }
 
     public UserData getUserData() {
-        String sql = "SELECT clothes, favorite_colors, schedules FROM " + userDataTable + " WHERE id = 1";
+        String sql = "SELECT clothes, favorite_colors, schedules FROM " + userDataTable + " WHERE id = '1'";
 
         Thread thread = new Thread(() -> {
             UserData userData = new UserData();
