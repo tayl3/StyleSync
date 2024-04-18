@@ -181,7 +181,7 @@ public class SettingsFragment extends Fragment {
                                         selectedColors.add(colorOptions[i]);
                                     }
                                 }
-                                userData.getUserPreference().setFavoriteColors(selectedColors);
+                                userService.getUserData().getUserPreference().setFavoriteColors(selectedColors);
                             }
                         })
                         .setNegativeButton("Cancel", null)
@@ -220,7 +220,7 @@ public class SettingsFragment extends Fragment {
                                         selectedActivities.add(activityOptions[i]);
                                     }
                                 }
-                                userData.getUserPreference().setSchedules(selectedActivities);
+                                userService.getUserData().getUserPreference().setSchedules(selectedActivities);
                             }
                         })
                         .setNegativeButton("Cancel", null)
@@ -239,7 +239,7 @@ public class SettingsFragment extends Fragment {
                 List<String> clothes = userData.getClothes();
 
                 clothes.add(clothingItem);
-                userData.setClothes(clothes);
+                userService.getUserData().setClothes(clothes);
                 inputClothes.setText(""); // Clear the EditText
             }
         });
@@ -247,6 +247,8 @@ public class SettingsFragment extends Fragment {
         savePreferences.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                System.out.println("Saving");
+                System.out.println(userService.getUserData().getUserPreference().getFavoriteColors().toString());
                 db.setUserData(userData);
             }
         });

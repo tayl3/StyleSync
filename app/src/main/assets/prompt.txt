@@ -94,4 +94,4 @@ Fill out the following output with complete recommended outfit plans based on th
   "plan3": []
 }
 
-DO NOT HAVE EXTRA TEXT BESIDES THE JSON FILE
+DO NOT HAVE EXTRA TEXT BESIDES THE JSON FILE, ONLY LIST THE ITEMS WITHOUT ANY ADDITIONAL EXPLANATIONS OR SUGGESTIONS

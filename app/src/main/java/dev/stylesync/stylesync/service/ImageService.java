@@ -40,18 +40,19 @@ public class ImageService implements Service {
     }
 
     public void uploadImage(String imageBase64, final DataCallback callback) {
-        String url = "https://api.imgbb.com/1/upload";
+        String url = "https://freeimage.host/api/1/upload";
 
         StringRequest stringRequest = new StringRequest(Request.Method.POST, url,
                 response -> {
                     ImgBBData imageData = new Gson().fromJson(response, ImgBBData.class);
                     callback.onDataReceived(imageData);
-                }, error -> callback.onError("Failed to upload the image to ImgBB")) {
+                }, error -> callback.onError("Failed to upload the image to ImgBB, error message: " + error.getMessage())) {
             @Override
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<>();
                 params.put("key", Secrets.IMGBB_API_KEY);
-                params.put("image", imageBase64);
+                params.put("action", "upload");
+                params.put("source", imageBase64);
                 return params;
             }
         };

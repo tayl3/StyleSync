@@ -16,7 +16,6 @@ public class UserService implements Service {
     private final Database database;
     private UserData userData;
     private final MainActivity context;
-    private final SettingsViewModel settingsViewModel = new SettingsViewModel();
 
     private static UserService user_instance = null;
     public static synchronized UserService getInstance(MainActivity context) {
@@ -65,5 +64,9 @@ public class UserService implements Service {
     public void removeElement(List<String> list, String elem) {
         list.remove(elem);
         database.setUserData(userData);
+    }
+
+    public void setUserData(UserData userData) {
+        this.userData = userData;
     }
 }

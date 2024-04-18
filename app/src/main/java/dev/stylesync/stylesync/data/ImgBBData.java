@@ -1,15 +1,10 @@
 package dev.stylesync.stylesync.data;
 
 public class ImgBBData implements Data {
-    private Data data;
-    private boolean success;
+    private Data image;
 
     public Data getData() {
-        return data;
-    }
-
-    public boolean isSuccess() {
-        return success;
+        return image;
     }
 
     public static class Data {

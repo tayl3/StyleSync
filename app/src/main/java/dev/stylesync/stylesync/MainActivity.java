@@ -88,7 +88,7 @@ public class MainActivity extends AppCompatActivity {
         // Initialize Services
         planService = new PlanService(this);
         weatherService = new WeatherService(this);
-        userService = new UserService(this);
+        userService = UserService.getInstance(this);
         imageService = new ImageService(this);
         volleyRequestQueue = Volley.newRequestQueue(this);
 
@@ -145,10 +145,6 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onDataReceived(Data data) {
                 ImgBBData imgBBData = (ImgBBData) data;
-                if (!imgBBData.isSuccess()) {
-                    System.err.println("Image upload unsuccessful");
-                    return;
-                }
                 System.out.println("Image URL: " + imgBBData.getData().getUrl());
                 imageService.identifyImage(imgBBData.getData().getUrl(), new StringCallback() {
                     @Override
