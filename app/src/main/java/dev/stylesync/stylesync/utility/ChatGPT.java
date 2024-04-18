@@ -44,6 +44,7 @@ public class ChatGPT {
 
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, url, JSONRequest,
                 response -> {
+                    System.out.println(JSONRequest.toString());
                     if (response != null) {
                         callback.onStringReceived(getContent(response));
                     } else {

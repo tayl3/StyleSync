@@ -1,18 +1,50 @@
 package dev.stylesync.stylesync.service;
 
+import android.provider.Settings;
+import android.util.Log;
+
+import com.google.firebase.auth.FirebaseAuth;
+
 import java.util.List;
 
 import dev.stylesync.stylesync.MainActivity;
 import dev.stylesync.stylesync.data.UserData;
+import dev.stylesync.stylesync.ui.settings.SettingsViewModel;
 import dev.stylesync.stylesync.utility.Database;
 
 public class UserService implements Service {
     private final Database database;
-    private final UserData userData;
+    private UserData userData;
+    private final MainActivity context;
+
+    private static UserService user_instance = null;
+    public static synchronized UserService getInstance(MainActivity context) {
+        if(user_instance == null) {
+            user_instance = new UserService(context);
+        }
+        return user_instance;
+    }
 
     public UserService(MainActivity context) {
+        this.context = context;
         this.database = context.database;
-        this.userData = database.getUserData();
+        updateUserData();
+    }
+
+    public void updateUserData() {
+        String googleId = FirebaseAuth.getInstance().getCurrentUser() != null ? FirebaseAuth.getInstance().getCurrentUser().getUid() : null;
+        //Log.d("GoogleID", googleId);
+
+        if (googleId != null) {
+            this.userData = database.getUserData(googleId);
+            Log.d("GoogleID", googleId);
+        } else {
+            String deviceId = Settings.Secure.getString(context.getContentResolver(), Settings.Secure.ANDROID_ID);
+            Log.d("UserService", "GoogleID is empty. Using Android ID: " + deviceId);
+
+            this.userData = database.getUserData(deviceId);
+            Log.d("deviceID", deviceId);
+        }
     }
 
     public UserData getUserData() {
@@ -32,5 +64,9 @@ public class UserService implements Service {
     public void removeElement(List<String> list, String elem) {
         list.remove(elem);
         database.setUserData(userData);
+    }
+
+    public void setUserData(UserData userData) {
+        this.userData = userData;
     }
 }
