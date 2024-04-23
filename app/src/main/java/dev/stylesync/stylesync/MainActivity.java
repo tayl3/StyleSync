@@ -5,9 +5,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.os.Bundle;
-import android.provider.Settings;
 import android.util.Base64;
-import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
@@ -24,7 +22,6 @@ import com.android.volley.toolbox.Volley;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.io.ByteArrayOutputStream;
-import java.util.Arrays;
 import java.util.List;
 
 import dev.stylesync.stylesync.data.Data;
@@ -34,13 +31,11 @@ import dev.stylesync.stylesync.service.ImageService;
 import dev.stylesync.stylesync.data.PlanData;
 import dev.stylesync.stylesync.data.StringCallback;
 import dev.stylesync.stylesync.databinding.ActivityMainBinding;
-import dev.stylesync.stylesync.service.ImageService;
 import dev.stylesync.stylesync.service.PlanService;
 import dev.stylesync.stylesync.service.UserService;
 import dev.stylesync.stylesync.service.WeatherService;
-import dev.stylesync.stylesync.ui.settings.SettingsViewModel;
 import dev.stylesync.stylesync.ui.home.viewpager.ViewPagerItem;
-import dev.stylesync.stylesync.ui.viewmodel.SharedViewModel;
+import dev.stylesync.stylesync.ui.home.viewpager.SharedViewModel;
 import dev.stylesync.stylesync.utility.Database;
 
 public class MainActivity extends AppCompatActivity {

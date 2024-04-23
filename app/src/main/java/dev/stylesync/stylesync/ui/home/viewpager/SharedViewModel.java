@@ -1,4 +1,4 @@
-package dev.stylesync.stylesync.ui.viewmodel;
+package dev.stylesync.stylesync.ui.home.viewpager;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
