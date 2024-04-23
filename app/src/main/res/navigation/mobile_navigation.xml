@@ -18,6 +18,12 @@
         tools:layout="@layout/fragment_dashboard" />
 
     <fragment
+        android:id="@+id/navigation_wardrobe"
+        android:name="dev.stylesync.stylesync.ui.wardrobe.WardrobeFragment"
+        android:label="@string/title_wardrobe"
+        tools:layout="@layout/fragment_wardrobe" />
+
+    <fragment
         android:id="@+id/navigation_settings"
         android:name="dev.stylesync.stylesync.ui.settings.SettingsFragment"
         android:label="@string/title_settings"
