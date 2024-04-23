@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">StyleSync</string>
     <string name="title_home">Home</string>
-    <string name="title_dashboard">Dashboard</string>
+    <string name="title_dashboard">Wardrobe</string>
     <string name="title_settings">Settings</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="default_web_client_id" translatable="false">webClientId.apps.googleusercontent.com</string>
