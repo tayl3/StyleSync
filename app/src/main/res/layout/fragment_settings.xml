@@ -8,104 +8,25 @@
     tools:context=".ui.settings.SettingsFragment">
 
     <Button
-        android:id="@+id/select_colors_button"
+        android:id="@+id/select_celebrity_button"
         android:layout_width="170dp"
-        android:layout_height="55dp"
-        android:textSize="14sp"
+        android:layout_height="70dp"
         android:layout_marginStart="100dp"
+        android:layout_marginTop="76dp"
         android:layout_marginEnd="100dp"
-        android:layout_marginBottom="520dp"
-        android:text="Select Colors"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <Button
-        android:id="@+id/select_activities_button"
-        android:layout_width="170dp"
-        android:layout_height="55dp"
-        android:layout_marginStart="100dp"
-        android:layout_marginEnd="100dp"
-        android:layout_marginBottom="432dp"
-        android:text="Select Activities"
+        android:text="Select Celebrity Inspiration"
         android:textSize="14sp"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.512"
+        app:layout_constraintHorizontal_bias="0.341"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/select_colors_button"
-        app:layout_constraintVertical_bias="0.437" />
-
-    <EditText
-        android:id="@+id/input_clothes"
-        android:layout_width="170dp"
-        android:layout_height="55dp"
-        android:layout_marginStart="100dp"
-        android:layout_marginEnd="100dp"
-        android:layout_marginBottom="356dp"
-        android:background="@null"
-        android:gravity="center"
-        android:hint="Manual Entry"
-        android:maxLength="20"
-        android:maxLines="1"
-        android:textSize="14sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.487"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/select_activities_button"
-        app:layout_constraintVertical_bias="0.589" />
-
-    <Button
-        android:id="@+id/manual_entry_button"
-        android:layout_width="170dp"
-        android:layout_height="55dp"
-        android:layout_marginStart="100dp"
-        android:layout_marginEnd="100dp"
-        android:layout_marginBottom="292dp"
-        android:text="Add to Wardrobe"
-        android:textSize="14sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.487"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/select_activities_button"
-        app:layout_constraintVertical_bias="0.757" />
-
-    <Button
-        android:id="@+id/save_preferences_button"
-        android:layout_width="188dp"
-        android:layout_height="75dp"
-        android:layout_marginStart="100dp"
-        android:layout_marginTop="30dp"
-        android:layout_marginEnd="100dp"
-        android:layout_marginBottom="212dp"
-        android:text="Save Preferences"
-        android:textSize="14sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.434"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/manual_entry_button"
-        app:layout_constraintVertical_bias="0.0" />
-
-    <ImageButton
-        android:id="@+id/sign_out_button"
-        android:layout_width="61dp"
-        android:layout_height="54dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginBottom="68dp"
-        android:background="@drawable/logout_icon"
-        android:onClick="onSignOutClicked"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintTop_toBottomOf="@id/select_colors_button" />
 
     <TextView
         android:id="@+id/welcomeTextView"
         android:layout_width="166dp"
         android:layout_height="94dp"
-        android:layout_marginTop="4dp"
-        android:layout_marginEnd="16dp"
+        android:layout_marginTop="12dp"
+        android:layout_marginEnd="20dp"
         android:textAlignment="center"
         android:textSize="20sp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -122,7 +43,48 @@
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.129" />
+        app:layout_constraintVertical_bias="0.14" />
+
+    <Button
+        android:id="@+id/select_activities_button"
+        android:layout_width="170dp"
+        android:layout_height="55dp"
+        android:layout_marginStart="100dp"
+        android:layout_marginEnd="100dp"
+        android:layout_marginBottom="432dp"
+        android:text="Select Activities"
+        android:textSize="14sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.365"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/select_colors_button"
+        app:layout_constraintVertical_bias="0.523" />
+
+    <Button
+        android:id="@+id/select_colors_button"
+        android:layout_width="170dp"
+        android:layout_height="55dp"
+        android:layout_marginStart="100dp"
+        android:layout_marginEnd="100dp"
+        android:layout_marginBottom="508dp"
+        android:text="Select Colors"
+        android:textSize="14sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.365"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <ImageButton
+        android:id="@+id/sign_out_button"
+        android:layout_width="61dp"
+        android:layout_height="54dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="68dp"
+        android:background="@drawable/logout_icon"
+        android:onClick="onSignOutClicked"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
     <ImageButton
         android:id="@+id/google_sign_in_button"

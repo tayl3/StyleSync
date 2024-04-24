@@ -54,9 +54,7 @@ public class SettingsFragment extends Fragment {
     private ImageButton signOutButton;
     private Button selectColorsButton;
     private Button selectActivitiesButton;
-    private Button manualAddButton;
-    private Button savePreferences;
-    private EditText inputClothes;
+    private Button selectCelebrityButton;
     private UserData userData;
     private Database db;
     private UserService userService;
@@ -100,11 +98,8 @@ public class SettingsFragment extends Fragment {
         selectColorsButton = root.findViewById(R.id.select_colors_button);
 
         selectActivitiesButton = root.findViewById(R.id.select_activities_button);
+        selectCelebrityButton = root.findViewById(R.id.select_celebrity_button);
 
-        manualAddButton = root.findViewById(R.id.manual_entry_button);
-        inputClothes = root.findViewById(R.id.input_clothes);
-
-        savePreferences = root.findViewById(R.id.save_preferences_button);
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
         if (user != null) {
@@ -182,6 +177,7 @@ public class SettingsFragment extends Fragment {
                                     }
                                 }
                                 userService.getUserData().getUserPreference().setFavoriteColors(selectedColors);
+                                db.setUserData(userData);
                             }
                         })
                         .setNegativeButton("Cancel", null)
@@ -221,6 +217,7 @@ public class SettingsFragment extends Fragment {
                                     }
                                 }
                                 userService.getUserData().getUserPreference().setSchedules(selectedActivities);
+                                db.setUserData(userData);
                             }
                         })
                         .setNegativeButton("Cancel", null)
@@ -228,28 +225,41 @@ public class SettingsFragment extends Fragment {
             }
         });
 
-        manualAddButton.setOnClickListener(new View.OnClickListener() {
+        selectCelebrityButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String clothingItem = inputClothes.getText().toString();
-                if(clothingItem.isEmpty()) {
-                    return;
+                String[] celebrityOptions = getResources().getStringArray(R.array.celebrity_options);
+                final int[] checkedItem = new int[1]; // This will keep track of which celebrity is selected
+                checkedItem[0] = -1; // indicates no selection
+
+                // Initialize checkedItem based on user's current preference
+                String favoriteCelebrity = userData.getUserPreference().getCelebrity();
+                for (int i = 0; i < celebrityOptions.length; i++) {
+                    if (favoriteCelebrity != null && favoriteCelebrity.equals(celebrityOptions[i])) {
+                        checkedItem[0] = i;
+                        break;
+                    }
                 }
-                // Add the user input to the clothes list
-                List<String> clothes = userData.getClothes();
 
-                clothes.add(clothingItem);
-                userService.getUserData().setClothes(clothes);
-                inputClothes.setText(""); // Clear the EditText
-            }
-        });
-
-        savePreferences.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                System.out.println("Saving");
-                System.out.println(userService.getUserData().getUserPreference().getFavoriteColors().toString());
-                db.setUserData(userData);
+                new AlertDialog.Builder(requireContext())
+                        .setTitle("Select Celebrity")
+                        .setSingleChoiceItems(celebrityOptions, checkedItem[0], new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                checkedItem[0] = which;
+                            }
+                        })
+                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                String selectedCelebrity = checkedItem[0] != -1 ? celebrityOptions[checkedItem[0]] : null;
+                                userData.getUserPreference().setCelebrity(selectedCelebrity);
+                                userService.setUserData(userData);
+                                db.setUserData(userData);
+                            }
+                        })
+                        .setNegativeButton("Cancel", null)
+                        .show();
             }
         });
 

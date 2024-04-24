@@ -82,7 +82,7 @@ public class Database {
     }
 
     private void checkAndCreateTable() {
-        String sql = "CREATE TABLE " + userDataTable + " (id VARCHAR PRIMARY KEY, clothes TEXT[], favorite_colors TEXT[], schedules TEXT[])";
+        String sql = "CREATE TABLE " + userDataTable + " (id VARCHAR PRIMARY KEY, clothes TEXT[], favorite_colors TEXT[], schedules TEXT[], celebrity_inspiration TEXT);";
 
         try {
             DatabaseMetaData dbm = conn.getMetaData();
@@ -106,8 +106,8 @@ public class Database {
 
     public void setUserData(UserData userData) {
 
-        String sql = "INSERT INTO " + userDataTable + " (id, clothes, favorite_colors, schedules) VALUES ('" + userData.getUserId() + "', ?, ?, ?) " +
-                "ON CONFLICT (id) DO UPDATE SET clothes = EXCLUDED.clothes, favorite_colors = EXCLUDED.favorite_colors, schedules = EXCLUDED.schedules";
+        String sql = "INSERT INTO " + userDataTable + " (id, clothes, favorite_colors, schedules) VALUES ('" + userData.getUserId() + "', ?, ?, ?, ?) " +
+                "ON CONFLICT (id) DO UPDATE SET clothes = EXCLUDED.clothes, favorite_colors = EXCLUDED.favorite_colors, schedules = EXCLUDED.schedules;";
 
         Thread thread = new Thread(() -> {
             try {
@@ -120,6 +120,7 @@ public class Database {
                 stmt.setArray(1, clothesArray);
                 stmt.setArray(2, colorsArray);
                 stmt.setArray(3, schedulesArray);
+                //stmt.setString(4, userData.getUserPreference().getCelebrity());
 
                 stmt.executeUpdate();
             } catch (SQLException e) {
@@ -151,6 +152,7 @@ public class Database {
                     Array clothesArray = rs.getArray("clothes");
                     Array colorsArray = rs.getArray("favorite_colors");
                     Array schedulesArray = rs.getArray("schedules");
+                    //String celebrity = rs.getString("celebrity");
 
                     if (clothesArray != null) {
                         List<String> clothes = new ArrayList<>(Arrays.asList((String[]) clothesArray.getArray()));
@@ -164,11 +166,15 @@ public class Database {
                         List<String> schedules = new ArrayList<>(Arrays.asList((String[]) schedulesArray.getArray()));
                         userData.getUserPreference().setSchedules(schedules);
                     }
+//                    if(celebrity != null) {
+//                        userData.getUserPreference().setCelebrity(celebrity);
+//                    }
                 } else {
                     // User does not exist, create a new user
                     userData.setClothes(new ArrayList<>());
                     userData.getUserPreference().setFavoriteColors(new ArrayList<>());
                     userData.getUserPreference().setSchedules(new ArrayList<>());
+                    //userData.getUserPreference().setCelebrity("");
                     setUserData(userData);
                 }
                 this.userData = userData;
@@ -267,6 +273,7 @@ public class Database {
                 "Cycling Jersey",
                 "Hiking Boots"
         ));
+        //userData.getUserPreference().setCelebrity("Taylor Swift");
         setUserData(userData);
     }
 }

@@ -35,6 +35,7 @@ public class UserData implements Data {
     public static class UserPreference {
         private List<String> favoriteColors;
         private List<String> schedules;
+        private String celebrity;
 
         public List<String> getFavoriteColors() {
             return favoriteColors;
@@ -50,6 +51,14 @@ public class UserData implements Data {
 
         public void setSchedules(List<String> schedules) {
             this.schedules = schedules;
+        }
+
+        public String getCelebrity() {
+            return celebrity;
+        }
+
+        public void setCelebrity(String celebrity) {
+            this.celebrity = celebrity;
         }
     }
 }

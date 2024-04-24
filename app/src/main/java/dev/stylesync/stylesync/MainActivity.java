@@ -129,8 +129,8 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    public void captureImage(View view){
-        if (detectingImage){
+    public void captureImage(View view) {
+        if (detectingImage) {
             return;
         }
         detectingImage = true;
@@ -138,7 +138,7 @@ public class MainActivity extends AppCompatActivity {
         imageService.captureImage();
     }
 
-    private void onImageReceived(String imageBase64){
+    private void onImageReceived(String imageBase64) {
         showPlanText();
         setPlanText("Detecting Clothing Item...");
         imageService.uploadImage(imageBase64, new DataCallback() {
@@ -150,11 +150,11 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onStringReceived(String string) {
                         detectingImage = false;
-                        if (string.equals("False")){
+                        if (string.equals("False")) {
                             setPlanText("No Clothing Item Detected");
                             return;
                         }
-                        if (string.equals("Multiple")){
+                        if (string.equals("Multiple")) {
                             setPlanText("Multiple Clothing Items Detected");
                             return;
                         }
