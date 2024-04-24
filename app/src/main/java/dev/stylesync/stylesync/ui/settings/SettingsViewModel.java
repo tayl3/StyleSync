@@ -10,8 +10,6 @@ public class SettingsViewModel extends ViewModel {
     private final MutableLiveData<String> mUserId;
 
     public SettingsViewModel() {
-        mText = new MutableLiveData<>();
-        mText.setValue("");
         mIsAuthenticated = new MutableLiveData<>();
         mIsAuthenticated.setValue(false);
         mUsername = new MutableLiveData<>();

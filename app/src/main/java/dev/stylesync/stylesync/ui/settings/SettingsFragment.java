@@ -251,7 +251,7 @@ public class SettingsFragment extends Fragment {
                             public void onClick(DialogInterface dialog, int which) {
                                 String selectedCelebrity = checkedItem[0] != -1 ? celebrityOptions[checkedItem[0]] : null;
                                 userData.getUserPreference().setCelebrity(selectedCelebrity);
-                                userService.setUserData(userData);
+                                userService.getUserData().getUserPreference().setCelebrity(selectedCelebrity);
                                 db.setUserData(userData);
                             }
                         })
