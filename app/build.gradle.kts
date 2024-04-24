@@ -23,11 +23,6 @@ android {
         val properties = Properties()
         properties.load(keystoreFile.inputStream())
 
-//        val postgresPass = properties.getProperty("POSTGRES_PASS") ?: ""
-//        val postgresUser = properties.getProperty("POSTGRES_USER") ?: ""
-//        val postgresHost = properties.getProperty("POSTGRES_HOST") ?: ""
-//        val postgresPort = properties.getProperty("POSTGRES_PORT") ?: ""
-
         val postgresUrl = properties.getProperty("POSTGRES_URL") ?: ""
 
         val weatherUrl = properties.getProperty("WEATHER_API_URL") ?: ""
