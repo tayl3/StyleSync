@@ -5,22 +5,15 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 public class SettingsViewModel extends ViewModel {
-    private final MutableLiveData<String> mText;
     private final MutableLiveData<Boolean> mIsAuthenticated; // Indicates if the user is authenticated
     private final MutableLiveData<String> mUsername;
     private final MutableLiveData<String> mUserId;
 
     public SettingsViewModel() {
-        mText = new MutableLiveData<>();
-        mText.setValue("This is settings fragment");
         mIsAuthenticated = new MutableLiveData<>();
         mIsAuthenticated.setValue(false);
         mUsername = new MutableLiveData<>();
         mUserId = new MutableLiveData<>();
-    }
-
-    public LiveData<String> getText() {
-        return mText;
     }
 
     public LiveData<Boolean> getIsAuthenticated() {

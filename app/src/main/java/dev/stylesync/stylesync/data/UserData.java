@@ -6,6 +6,7 @@ import com.google.gson.Gson;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class UserData implements Data {
     private String userId;
@@ -31,6 +32,10 @@ public class UserData implements Data {
             list.add(cloth.toString());
         }
         return list;
+    }
+
+    public List<String> getClothesDescriptions() {
+        return clothes.stream().map(UserData.Cloth::getDescription).collect(Collectors.toList());
     }
 
     public void setClothes(List<Cloth> clothes) {
