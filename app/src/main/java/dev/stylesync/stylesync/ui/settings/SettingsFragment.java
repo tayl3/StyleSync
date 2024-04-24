@@ -216,6 +216,7 @@ public class SettingsFragment extends Fragment {
                                         selectedActivities.add(activityOptions[i]);
                                     }
                                 }
+                                System.out.println("setting user data");
                                 userService.getUserData().getUserPreference().setSchedules(selectedActivities);
                                 db.setUserData(userData);
                             }

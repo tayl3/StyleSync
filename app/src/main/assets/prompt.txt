@@ -7,6 +7,7 @@ Please generate an output JSON file with the following input:
 	"weather": "sunny",
 	"favorite color": ["red", "blue"],
 	"schedule": ["business conference"],
+	"celebrity": "Emma Watson",
 	"clothes": [
 	    "White T-shirt",
 	    "Black T-shirt",
@@ -86,7 +87,7 @@ Please generate an output JSON file with the following input:
 	  ]
 }
 
-Fill out the following output with complete recommended outfit plans based on the weather conditions, favorite colors, schedules, and available clothes. Favorite color adds some weight to the plan but is not required. You do not have to use up every possible cloth for each plan:
+Fill out the following output with complete recommended outfit plans based on the weather conditions, favorite colors, schedules, celebrity, and available clothes. Favorite color adds some weight to the plan but is not required. If celebrity is not "None", use the celebrity's outfit style as inspiration. Otherwise, ignore celebrity. You do not have to use up every possible cloth for each plan:
 
 {
   "plan1": [],

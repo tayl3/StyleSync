@@ -69,8 +69,9 @@ public class PlanService implements Service {
     private static String makePrompt(String json) {
         return "Please generate an output JSON file with the following input: " + json
                 + " Fill out the following output with recommended outfit plans based on the weather conditions, "
-                + "favorite colors, schedules, and available clothes. The arrays should contain only string literals. "
-                + "User preference adds some weight to the plan but is not required. Make sure to generate a comprehensive plan "
+                + "favorite colors, schedules, celebrity and available clothes. The arrays should contain only string literals that are clothing items "
+                + "If celebrity is \"None\", do not use the celebrity in the plan. Otherwise, use what the celebrity wears as style inspiration" +
+                " User preference adds some weight to the plan but is not required. Make sure to generate a comprehensive plan "
                 + "that is suitable to go outside: {\"plan1\":[],\"plan2\":[],\"plan3\":[]}"
                 + " DO NOT HAVE EXTRA TEXT ASIDE FROM THE JSON OUTPUT, INCLUDING NEW LINES";
     }
