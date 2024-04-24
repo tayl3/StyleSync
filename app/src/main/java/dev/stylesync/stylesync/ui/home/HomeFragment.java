@@ -4,20 +4,16 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.viewpager2.widget.ViewPager2;
 
-import java.util.ArrayList;
-
 import dev.stylesync.stylesync.R;
 import dev.stylesync.stylesync.databinding.FragmentHomeBinding;
 import dev.stylesync.stylesync.ui.home.viewpager.ViewPagerAdapter;
-import dev.stylesync.stylesync.ui.home.viewpager.ViewPagerItem;
-import dev.stylesync.stylesync.ui.viewmodel.SharedViewModel;
+import dev.stylesync.stylesync.ui.home.viewpager.SharedViewModel;
 
 public class HomeFragment extends Fragment {
 

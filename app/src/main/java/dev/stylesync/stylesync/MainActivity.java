@@ -22,14 +22,18 @@ import androidx.navigation.ui.NavigationUI;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.Volley;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.common.reflect.TypeToken;
+import com.google.gson.Gson;
 
 import java.io.ByteArrayOutputStream;
+import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.List;
 
 import dev.stylesync.stylesync.data.Data;
 import dev.stylesync.stylesync.data.DataCallback;
 import dev.stylesync.stylesync.data.ImgBBData;
+import dev.stylesync.stylesync.data.UserData;
 import dev.stylesync.stylesync.service.ImageService;
 import dev.stylesync.stylesync.data.PlanData;
 import dev.stylesync.stylesync.data.StringCallback;
@@ -38,9 +42,8 @@ import dev.stylesync.stylesync.service.ImageService;
 import dev.stylesync.stylesync.service.PlanService;
 import dev.stylesync.stylesync.service.UserService;
 import dev.stylesync.stylesync.service.WeatherService;
-import dev.stylesync.stylesync.ui.settings.SettingsViewModel;
 import dev.stylesync.stylesync.ui.home.viewpager.ViewPagerItem;
-import dev.stylesync.stylesync.ui.viewmodel.SharedViewModel;
+import dev.stylesync.stylesync.ui.home.viewpager.SharedViewModel;
 import dev.stylesync.stylesync.utility.Database;
 
 public class MainActivity extends AppCompatActivity {
@@ -73,7 +76,7 @@ public class MainActivity extends AppCompatActivity {
 
         BottomNavigationView navView = findViewById(R.id.nav_view);
         AppBarConfiguration appBarConfiguration = new AppBarConfiguration.Builder(
-                R.id.navigation_home, R.id.navigation_dashboard, R.id.navigation_settings)
+                R.id.navigation_home, R.id.navigation_wardrobe, R.id.navigation_settings)
                 .build();
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_activity_main);
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
@@ -150,15 +153,15 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onStringReceived(String string) {
                         detectingImage = false;
-                        if (string.equals("False")) {
-                            setPlanText("No Clothing Item Detected");
-                            return;
-                        }
-                        if (string.equals("Multiple")) {
-                            setPlanText("Multiple Clothing Items Detected");
-                            return;
-                        }
+
                         setPlanText("Clothing Item Detected:\n" + string);
+
+                        Type listType = new TypeToken<List<UserData.Cloth>>() {}.getType();
+                        List<UserData.Cloth> list = new Gson().fromJson(string, listType);
+
+
+                        userService.getUserData().getClothes().addAll(list);
+                        userService.saveUserData();
                     }
 
                     @Override
