@@ -30,6 +30,17 @@
         <item>Dance</item>
         <item>Football</item>
     </string-array>
+    <string-array name="celebrity_options">
+        <item>Harry Styles</item>
+        <item>Zendaya</item>
+        <item>Kareena Kapoor</item>
+        <item>Mark Zuckerberg</item>
+        <item>Emma Watson</item>
+        <item>Adam Sandler</item>
+        <item>Gina Rodriguez</item>
+        <item>Sandra Oh</item>
+        <item>None</item>
+    </string-array>
 
     <string name="google_sign_in">Sign in with Google</string>
     <string name="home_default">Please Generate a Plan</string>

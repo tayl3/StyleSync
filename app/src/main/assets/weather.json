@@ -83,7 +83,8 @@
     ],
     "schedules": [
       "business conference"
-    ]
+    ],
+    "celebrity": "Emma Watson"
   },
   "weatherData": {
     "humidity": 80.0,

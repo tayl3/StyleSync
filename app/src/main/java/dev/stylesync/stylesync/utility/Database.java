@@ -89,7 +89,7 @@ public class Database {
     }
 
     private void checkAndCreateTable() {
-        String sql = "CREATE TABLE " + userDataTable + " (id VARCHAR PRIMARY KEY, clothes TEXT[], favorite_colors TEXT[], schedules TEXT[])";
+        String sql = "CREATE TABLE " + userDataTable + " (id VARCHAR PRIMARY KEY, clothes TEXT[], favorite_colors TEXT[], schedules TEXT[], celebrity TEXT);";
 
         try {
             DatabaseMetaData dbm = conn.getMetaData();
@@ -113,8 +113,8 @@ public class Database {
 
     public void setUserData(UserData userData) {
 
-        String sql = "INSERT INTO " + userDataTable + " (id, clothes, favorite_colors, schedules) VALUES ('" + userData.getUserId() + "', ?, ?, ?) " +
-                "ON CONFLICT (id) DO UPDATE SET clothes = EXCLUDED.clothes, favorite_colors = EXCLUDED.favorite_colors, schedules = EXCLUDED.schedules";
+        String sql = "INSERT INTO " + userDataTable + " (id, clothes, favorite_colors, schedules, celebrity) VALUES ('" + userData.getUserId() + "', ?, ?, ?, ?) " +
+                "ON CONFLICT (id) DO UPDATE SET clothes = EXCLUDED.clothes, favorite_colors = EXCLUDED.favorite_colors, schedules = EXCLUDED.schedules, celebrity = EXCLUDED.celebrity;";
 
         Thread thread = new Thread(() -> {
             try {
@@ -127,6 +127,7 @@ public class Database {
                 stmt.setArray(1, clothesArray);
                 stmt.setArray(2, colorsArray);
                 stmt.setArray(3, schedulesArray);
+                stmt.setString(4, userData.getUserPreference().getCelebrity());
 
                 stmt.executeUpdate();
             } catch (SQLException e) {
@@ -144,7 +145,7 @@ public class Database {
 
     public UserData getUserData(String userId) {
         Log.d("getUserData", "Getting user data for userId: " + userId);
-        String sql = "SELECT clothes, favorite_colors, schedules FROM " + userDataTable + " WHERE id = '" + userId + "';";
+        String sql = "SELECT clothes, favorite_colors, schedules, celebrity FROM " + userDataTable + " WHERE id = '" + userId + "';";
 
         Thread thread = new Thread(() -> {
             UserData userData = new UserData();
@@ -158,7 +159,8 @@ public class Database {
                     Array clothesArray = rs.getArray("clothes");
                     Array colorsArray = rs.getArray("favorite_colors");
                     Array schedulesArray = rs.getArray("schedules");
-                    
+                    String celebrity = rs.getString("celebrity");
+                  
                     if (clothesArray != null) {
                         List<String> clothes = new ArrayList<>(Arrays.asList((String[]) clothesArray.getArray()));
                         userData.setClothesJSON(clothes);
@@ -171,11 +173,15 @@ public class Database {
                         List<String> schedules = new ArrayList<>(Arrays.asList((String[]) schedulesArray.getArray()));
                         userData.getUserPreference().setSchedules(schedules);
                     }
+                    if(celebrity != null) {
+                        userData.getUserPreference().setCelebrity(celebrity);
+                    }
                 } else {
                     // User does not exist, create a new user
                     userData.setClothes(new ArrayList<>());
                     userData.getUserPreference().setFavoriteColors(new ArrayList<>());
                     userData.getUserPreference().setSchedules(new ArrayList<>());
+                    userData.getUserPreference().setCelebrity("None");
                     setUserData(userData);
                 }
                 this.userData = userData;
@@ -274,6 +280,7 @@ public class Database {
                 "Cycling Jersey",
                 "Hiking Boots"
         ));
+        userData.getUserPreference().setCelebrity("Adam Sandler");
         setUserData(userData);
     }
  */
