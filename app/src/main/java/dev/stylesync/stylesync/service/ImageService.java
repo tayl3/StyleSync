@@ -61,12 +61,9 @@ public class ImageService implements Service {
     }
 
     public void identifyImage(String url, StringCallback callback) {
-        ChatGPT.sendPrompt(context, ChatGPT.makeImageRequest(makePrompt(), url), new StringCallback() {
+        ChatGPT.sendPrompt(context, ChatGPT.makeImageRequest(makePrompt(url), url), new StringCallback() {
             @Override
             public void onStringReceived(String string) {
-                if (string.lastIndexOf('.') == string.length() - 1) {
-                    string = string.substring(0, string.length() - 1);
-                }
                 callback.onStringReceived(string);
             }
 
@@ -77,7 +74,19 @@ public class ImageService implements Service {
         });
     }
 
-    private static String makePrompt() {
-        return "Provide a detailed description of the clothing, accessory, or other wearing item in this image, including its color, style, pattern, shape, text, and any distinctive features present. The description should contain a few qualifiers and the type of the item. The description should not be a list of keywords and avoid using commas or other separators. Identify specific brand and model if possible. The length should be no more than 10 words. Output \"False\" if you cannot identify any item. Output \"Multiple\" if you can identify multiple items.";
+    private static String makePrompt(String url) {
+        return "Provide a detailed description and proper tagging of all clothing, accessory, or other wearing items in this image and fill the following JSON template, including its color, style, pattern, shape, text, and any distinctive features present. The description should contain a few qualifiers and the type of the item. The description should not be a list of keywords and avoid using commas or other separators. Identify specific brand and model in the description if possible. The length of the description should be no more than 10 words. DO NOT HAVE EXTRA TEXT BESIDES THE JSON FILE, ONLY LIST THE ITEMS WITHOUT ANY ADDITIONAL EXPLANATIONS OR SUGGESTIONS. The original url is: " + url + "\n" +
+                "[\n" +
+                "  {\n" +
+                "    \"description\": \"Description for item 1\",\n" +
+                "    \"tags\": [\"tag1\", \"tag2\", \"tag3\"],\n" +
+                "    \"url\": \"https://original-url-of-item-1\"\n" +
+                "  },\n" +
+                "  {\n" +
+                "    \"description\": \"Description for item 2\",\n" +
+                "    \"tags\": [\"tag1\", \"tag2\", \"tag3\"],\n" +
+                "    \"url\": \"https://original-url-of-item-2\"\n" +
+                "  }\n" +
+                "]";
     }
 }

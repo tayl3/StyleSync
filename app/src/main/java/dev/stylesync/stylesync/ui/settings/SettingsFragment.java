@@ -5,7 +5,6 @@ import static android.app.Activity.RESULT_OK;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -141,7 +140,7 @@ public class SettingsFragment extends Fragment {
             @Override
             public void onChanged(@Nullable String userId) {
                 // Update user data when userId changes
-                userService.updateUserData();
+                userService.initUserData();
                 userData = userService.getUserData();
 
                 // Update checked boxes in selectColorsButton dialog
@@ -235,11 +234,10 @@ public class SettingsFragment extends Fragment {
                 if(clothingItem.isEmpty()) {
                     return;
                 }
-                // Add the user input to the clothes list
-                List<String> clothes = userData.getClothes();
 
-                clothes.add(clothingItem);
-                userService.getUserData().setClothes(clothes);
+                UserData.Cloth cloth = new UserData.Cloth(clothingItem,null, null);
+                userService.getUserData().getClothes().add(cloth);
+
                 inputClothes.setText(""); // Clear the EditText
             }
         });
@@ -249,7 +247,7 @@ public class SettingsFragment extends Fragment {
             public void onClick(View v) {
                 System.out.println("Saving");
                 System.out.println(userService.getUserData().getUserPreference().getFavoriteColors().toString());
-                db.setUserData(userData);
+                userService.saveUserData();
             }
         });
 
@@ -275,7 +273,7 @@ public class SettingsFragment extends Fragment {
     private void onSignInResult(FirebaseAuthUIAuthenticationResult result) {
         IdpResponse response = result.getIdpResponse();
         if (result.getResultCode() == RESULT_OK) {
-            userService.updateUserData();
+            userService.initUserData();
             // Successfully signed in
             FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
             settingsViewModel.setAuthenticated(true);
@@ -294,7 +292,7 @@ public class SettingsFragment extends Fragment {
             NavController navController = NavHostFragment.findNavController(this);
             navController.navigate(R.id.action_settings_to_home);
         } else {
-            userService.updateUserData();
+            userService.initUserData();
             // Sign in failed. If response is null the user canceled the
             // sign-in flow using the back button. Otherwise check
             // response.getError().getErrorCode() and handle the error.
@@ -321,7 +319,7 @@ public class SettingsFragment extends Fragment {
                         settingsViewModel.setUsername("GUEST");
                         settingsViewModel.setUserId("NULL");
                         settingsViewModel.setAuthenticated(false);
-                        userService.updateUserData();
+                        userService.initUserData();
                         if (binding != null) {
                             final TextView welcomeTextView = binding.welcomeTextView;
                             welcomeTextView.setText("Welcome, GUEST!");
