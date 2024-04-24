@@ -9,7 +9,7 @@ import java.util.List;
 
 public class UserData implements Data {
     private String userId;
-    private List<Cloth> clothes;
+    private List<Cloth> clothes = new ArrayList<>();
     private UserPreference userPreference = new UserPreference();
 
     public String getUserId() {
@@ -27,6 +27,7 @@ public class UserData implements Data {
     public List<String> getClothesJSON() {
         List<String> list = new ArrayList<>();
         for (Cloth cloth : clothes) {
+            System.out.println(cloth);
             list.add(cloth.toString());
         }
         return list;
@@ -39,6 +40,7 @@ public class UserData implements Data {
     public void setClothesJSON(List<String> clothes) {
         List<Cloth> list = new ArrayList<>();
         for (String str : clothes) {
+            System.out.println(str);
             list.add(new Gson().fromJson(str, Cloth.class));
         }
         this.clothes = list;
@@ -53,8 +55,8 @@ public class UserData implements Data {
     }
 
     public static class UserPreference {
-        private List<String> favoriteColors;
-        private List<String> schedules;
+        private List<String> favoriteColors = new ArrayList<>();
+        private List<String> schedules = new ArrayList<>();
 
         public List<String> getFavoriteColors() {
             return favoriteColors;

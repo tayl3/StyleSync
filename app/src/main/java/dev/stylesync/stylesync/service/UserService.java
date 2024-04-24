@@ -5,11 +5,8 @@ import android.util.Log;
 
 import com.google.firebase.auth.FirebaseAuth;
 
-import java.util.List;
-
 import dev.stylesync.stylesync.MainActivity;
 import dev.stylesync.stylesync.data.UserData;
-import dev.stylesync.stylesync.ui.settings.SettingsViewModel;
 import dev.stylesync.stylesync.utility.Database;
 
 public class UserService implements Service {
@@ -28,10 +25,10 @@ public class UserService implements Service {
     public UserService(MainActivity context) {
         this.context = context;
         this.database = context.database;
-        updateUserData();
+        initUserData();
     }
 
-    public void updateUserData() {
+    public void initUserData() {
         String googleId = FirebaseAuth.getInstance().getCurrentUser() != null ? FirebaseAuth.getInstance().getCurrentUser().getUid() : null;
         //Log.d("GoogleID", googleId);
 
@@ -44,6 +41,9 @@ public class UserService implements Service {
 
             this.userData = database.getUserData(deviceId);
             Log.d("deviceID", deviceId);
+            if (this.userData == null){
+                this.userData = new UserData();
+            }
         }
     }
 
@@ -51,22 +51,11 @@ public class UserService implements Service {
         return userData;
     }
 
-    public void addElement(List<String> list, String elem) {
-        list.add(elem);
-        database.setUserData(userData);
-    }
-
-    public void removeElement(List<String> list, int index) {
-        list.remove(index);
-        database.setUserData(userData);
-    }
-
-    public void removeElement(List<String> list, String elem) {
-        list.remove(elem);
-        database.setUserData(userData);
-    }
-
     public void setUserData(UserData userData) {
         this.userData = userData;
+    }
+
+    public void saveUserData(){
+        database.setUserData(userData);
     }
 }

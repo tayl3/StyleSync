@@ -1,0 +1,12 @@
+[
+  {
+    "description": "Description for item 1",
+    "tags": ["tag1", "tag2", "tag3"],
+    "url": "https://original-url-of-item-1"
+  },
+  {
+    "description": "Description for item 2",
+    "tags": ["tag1", "tag2", "tag3"],
+    "url": "https://original-url-of-item-2"
+  }
+]
