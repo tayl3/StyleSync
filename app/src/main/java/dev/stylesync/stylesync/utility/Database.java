@@ -45,7 +45,9 @@ public class Database {
                 checkAndCreateDatabase();
                 conn = DriverManager.getConnection(postgresUrl);
                 checkAndCreateTable();
-                //initSampleUserData();
+
+                // initSampleUserData();
+
                 status = true;
             } catch (Exception e) {
                 status = false;
@@ -113,7 +115,7 @@ public class Database {
             try {
                 PreparedStatement stmt = conn.prepareStatement(sql);
 
-                Array clothesArray = conn.createArrayOf("text", userData.getClothes().toArray());
+                Array clothesArray = conn.createArrayOf("text", userData.getClothesJSON().toArray());
                 Array colorsArray = conn.createArrayOf("text", userData.getUserPreference().getFavoriteColors().toArray());
                 Array schedulesArray = conn.createArrayOf("text", userData.getUserPreference().getSchedules().toArray());
 
@@ -151,7 +153,7 @@ public class Database {
                     Array clothesArray = rs.getArray("clothes");
                     Array colorsArray = rs.getArray("favorite_colors");
                     Array schedulesArray = rs.getArray("schedules");
-
+                    
                     if (clothesArray != null) {
                         List<String> clothes = new ArrayList<>(Arrays.asList((String[]) clothesArray.getArray()));
                         userData.setClothes(clothes);
@@ -210,7 +212,7 @@ public class Database {
             e.printStackTrace();
         }
     }
-
+/*
     private void initSampleUserData() {
         UserData userData = new UserData();
         userData.getUserPreference().setFavoriteColors(Arrays.asList("red","blue"));
@@ -269,4 +271,5 @@ public class Database {
         ));
         setUserData(userData);
     }
+ */
 }
