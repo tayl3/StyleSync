@@ -12,25 +12,26 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.List;
 
 import dev.stylesync.stylesync.R;
+import dev.stylesync.stylesync.data.UserData;
 
 public class WardrobeItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
-    private List<String> items;
+    private List<UserData.Cloth> items;
     private OnItemClickListener listener;
     private static final int VIEW_TYPE_ITEM = 0;
     private static final int VIEW_TYPE_EMPTY = 1;
-    private List<String> clothes;
+    private List<UserData.Cloth> clothes;
 
     public interface OnItemClickListener {
         void onDeleteClick(int position);
     }
 
-    public WardrobeItemAdapter(List<String> items, OnItemClickListener listener) {
+    public WardrobeItemAdapter(List<UserData.Cloth> items, OnItemClickListener listener) {
         this.items = items;
         this.listener = listener;
     }
 
-    public void setClothes(List<String> clothes) {
+    public void setClothes(List<UserData.Cloth> clothes) {
         this.clothes = clothes;
     }
 
@@ -58,8 +59,8 @@ public class WardrobeItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         if (holder instanceof ItemViewHolder) {
-            String item = items.get(position);
-            ((ItemViewHolder) holder).textViewItem.setText(item);
+            UserData.Cloth item = items.get(position);
+            ((ItemViewHolder) holder).textViewItem.setText(item.getDescription());
             ((ItemViewHolder) holder).buttonDelete.setOnClickListener(v -> listener.onDeleteClick(position));
         }
     }

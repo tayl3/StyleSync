@@ -9,6 +9,7 @@ import androidx.lifecycle.MutableLiveData;
 import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import dev.stylesync.stylesync.MainActivity;
 import dev.stylesync.stylesync.data.ListType;
@@ -21,7 +22,7 @@ public class UserService implements Service {
     private UserData userData;
     private final MainActivity context;
 
-    private MutableLiveData<List<String>> clothesLiveData = new MutableLiveData<>();
+    private MutableLiveData<List<UserData.Cloth>> clothesLiveData = new MutableLiveData<>();
 
     private static UserService user_instance = null;
 
@@ -58,7 +59,7 @@ public class UserService implements Service {
         }
     }
 
-    public LiveData<List<String>> getClothesLiveData() {
+    public LiveData<List<UserData.Cloth>> getClothesLiveData() {
         return clothesLiveData;
     }
 
@@ -66,44 +67,24 @@ public class UserService implements Service {
         return userData;
     }
 
-    public void addElement(ListType type, String elem) {
-        List<String> targetList = getListByType(type);
-        if (targetList != null) {
-            targetList.add(elem);
-            if (type == ListType.CLOTHES) {
-                clothesLiveData.setValue(targetList);
-            }
-            database.setUserData(userData);
+
+    public void addClothingItem(UserData.Cloth cloth) {
+        List<UserData.Cloth> clothes = userData.getClothes();
+        if(clothes != null) {
+            clothes.add(cloth);
+            System.out.println("Clothes descriptions: " + userData.getClothesDescriptions().toString());
+            clothesLiveData.setValue(userData.getClothes());
         }
+        database.setUserData(userData);
     }
 
-    public void removeElement(ListType type, int index) {
-        List<String> targetList = getListByType(type);
-        if (targetList != null && index >= 0 && index < targetList.size()) {
-            targetList.remove(index);
-            if (type == ListType.CLOTHES) {
-                clothesLiveData.setValue(targetList);
-            }
-            database.setUserData(userData);
+    public void removeClothingItem(int index) {
+        List<UserData.Cloth> clothes = userData.getClothes();
+        if(clothes != null && index >= 0 && index < clothes.size()) {
+            clothes.remove(index);
+            clothesLiveData.setValue(userData.getClothes());
         }
-    }
-
-    private List<String> getListByType(ListType type) {
-        switch (type) {
-            case CLOTHES:
-                return userData.getClothes();
-            case FAVORITE_COLORS:
-                return userData.getUserPreference().getFavoriteColors();
-            case SCHEDULES:
-                return userData.getUserPreference().getSchedules();
-            default:
-                return null;
-        }
-    }
-
-    public void setUserData(UserData userData) {
-        this.userData = userData;
-        clothesLiveData.postValue(userData.getClothes());
+        database.setUserData(userData);
     }
 
     public void saveUserData(){

@@ -24,6 +24,7 @@ import java.util.List;
 import dev.stylesync.stylesync.MainActivity;
 import dev.stylesync.stylesync.R;
 import dev.stylesync.stylesync.data.ListType;
+import dev.stylesync.stylesync.data.UserData;
 import dev.stylesync.stylesync.databinding.FragmentWardrobeBinding;
 import dev.stylesync.stylesync.service.UserService;
 
@@ -63,7 +64,7 @@ public class WardrobeFragment extends Fragment {
                     } else {
                         showEmptyView(false);
                     }
-                    userService.removeElement(ListType.CLOTHES, position);
+                    userService.removeClothingItem(position);
                     if(clothes.isEmpty()) {
                         adapter.notifyDataSetChanged();
                     }
@@ -79,9 +80,8 @@ public class WardrobeFragment extends Fragment {
         addClothesButton.setOnClickListener(v -> {
             String clothingItem = inputClothes.getText().toString().trim();
             if(!clothingItem.isEmpty()) {
-                List<String> clothes = new ArrayList<>(userService.getUserData().getClothes());
-                clothes.add(clothingItem);
-                userService.addElement(ListType.CLOTHES, clothingItem);
+                UserData.Cloth cloth = new UserData.Cloth(clothingItem, "", new ArrayList<>());
+                userService.addClothingItem(cloth);
                 inputClothes.setText("");
             }
         });
