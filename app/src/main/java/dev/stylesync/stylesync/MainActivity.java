@@ -5,7 +5,9 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.util.Base64;
+import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
@@ -20,17 +22,23 @@ import androidx.navigation.ui.NavigationUI;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.Volley;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.common.reflect.TypeToken;
+import com.google.gson.Gson;
 
 import java.io.ByteArrayOutputStream;
+import java.lang.reflect.Type;
+import java.util.Arrays;
 import java.util.List;
 
 import dev.stylesync.stylesync.data.Data;
 import dev.stylesync.stylesync.data.DataCallback;
 import dev.stylesync.stylesync.data.ImgBBData;
+import dev.stylesync.stylesync.data.UserData;
 import dev.stylesync.stylesync.service.ImageService;
 import dev.stylesync.stylesync.data.PlanData;
 import dev.stylesync.stylesync.data.StringCallback;
 import dev.stylesync.stylesync.databinding.ActivityMainBinding;
+import dev.stylesync.stylesync.service.ImageService;
 import dev.stylesync.stylesync.service.PlanService;
 import dev.stylesync.stylesync.service.UserService;
 import dev.stylesync.stylesync.service.WeatherService;
@@ -145,15 +153,14 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onStringReceived(String string) {
                         detectingImage = false;
-                        if (string.equals("False")){
-                            setPlanText("No Clothing Item Detected");
-                            return;
-                        }
-                        if (string.equals("Multiple")){
-                            setPlanText("Multiple Clothing Items Detected");
-                            return;
-                        }
                         setPlanText("Clothing Item Detected:\n" + string);
+
+                        Type listType = new TypeToken<List<UserData.Cloth>>() {}.getType();
+                        List<UserData.Cloth> list = new Gson().fromJson(string, listType);
+
+
+                        userService.getUserData().getClothes().addAll(list);
+                        userService.saveUserData();
                     }
 
                     @Override

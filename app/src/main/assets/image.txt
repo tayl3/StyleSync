@@ -1,0 +1,13 @@
+Provide a detailed description and proper tagging of all clothing, accessory, or other wearing items in this image and fill the following JSON template, including its color, style, pattern, shape, text, and any distinctive features present. The description should contain a few qualifiers and the type of the item. The description should not be a list of keywords and avoid using commas or other separators. Identify specific brand and model in the description if possible. The length of the description should be no more than 10 words. The original url is:
+[
+  {
+    "description": "Description for item 1",
+    "tags": ["tag1", "tag2", "tag3"],
+    "url": "https://original-url-of-item-1"
+  },
+  {
+    "description": "Description for item 2",
+    "tags": ["tag1", "tag2", "tag3"],
+    "url": "https://original-url-of-item-2"
+  }
+]
