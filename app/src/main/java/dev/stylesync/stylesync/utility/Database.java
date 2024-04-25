@@ -47,7 +47,7 @@ public class Database {
                 checkAndCreateDatabase();
                 conn = DriverManager.getConnection(postgresUrl);
 
-                dropTable(userDataTable);
+//                dropTable(userDataTable);
 
                 checkAndCreateTable();
 

@@ -11,5 +11,5 @@
         android:text="@string/empty_wardrobe_text"
         android:gravity="center"
         android:textSize="24sp"
-        android:textColor="@android:color/white" />
+        android:textColor="?android:textColorPrimary" />
 </FrameLayout>
