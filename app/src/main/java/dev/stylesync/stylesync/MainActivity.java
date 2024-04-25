@@ -18,6 +18,7 @@ import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
+import androidx.viewpager.widget.ViewPager;
 
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.Volley;
@@ -113,12 +114,15 @@ public class MainActivity extends AppCompatActivity {
             public void onDataReceived(Data data) {
                 PlanData planData = (PlanData) data;
 
-                List<ViewPagerItem> viewPagerItems = PlanData.convertPlanDataToViewPagerItems(planData);
-                sharedViewModel.setViewPagerItems(viewPagerItems);
-                sharedViewModel.setLoading(false);
-                hidePlanText();
-
-                generatingPlan = false;
+                userService.getClothesLiveData().observe(MainActivity.this, cloths -> {
+                    if(cloths != null) {
+                        List<ViewPagerItem> viewPagerItems = PlanData.convertPlanDataToViewPagerItems(planData, cloths);
+                        sharedViewModel.setViewPagerItems(viewPagerItems);
+                    }
+                    sharedViewModel.setLoading(false);
+                    hidePlanText();
+                    generatingPlan = false;
+                });
             }
 
             @Override
