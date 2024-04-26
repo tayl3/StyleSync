@@ -1,9 +1,14 @@
 package dev.stylesync.stylesync;
 
 import android.Manifest;
+import android.app.AlarmManager;
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.util.Base64;
@@ -13,6 +18,7 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import androidx.core.app.NotificationManagerCompat;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
@@ -27,6 +33,7 @@ import com.google.gson.Gson;
 
 import java.io.ByteArrayOutputStream;
 import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -44,6 +51,7 @@ import dev.stylesync.stylesync.service.UserService;
 import dev.stylesync.stylesync.service.WeatherService;
 import dev.stylesync.stylesync.ui.home.viewpager.ViewPagerItem;
 import dev.stylesync.stylesync.ui.home.viewpager.SharedViewModel;
+import dev.stylesync.stylesync.utility.Constants;
 import dev.stylesync.stylesync.utility.Database;
 
 public class MainActivity extends AppCompatActivity {
@@ -64,12 +72,14 @@ public class MainActivity extends AppCompatActivity {
     private boolean generatingPlan;
     private boolean detectingImage;
     public static final int REQUEST_CODE_CAPTURE_IMAGE = 1;
-    public static final int PERMISSION_CODE_LOCATION = 1;
-    public static final int PERMISSION_CODE_CAMERA = 2;
+    public static final int PERMISSION_CODE = 2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // Create channel for daily reminder notifications
+        createNotificationChannel();
 
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
@@ -87,6 +97,7 @@ public class MainActivity extends AppCompatActivity {
 
         // Database
         database = Database.getInstance();
+
 
         // Initialize Services
         planService = new PlanService(this);
@@ -202,19 +213,46 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void requestPermission() {
-        // Location
-        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[]{
-                    android.Manifest.permission.ACCESS_FINE_LOCATION,
-                    android.Manifest.permission.ACCESS_COARSE_LOCATION}, PERMISSION_CODE_LOCATION);
+        List<String> permissionsNeeded = new ArrayList<>();
+
+        // Location Permissions
+        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            permissionsNeeded.add(android.Manifest.permission.ACCESS_FINE_LOCATION);
+        }
+        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            permissionsNeeded.add(android.Manifest.permission.ACCESS_COARSE_LOCATION);
         }
 
-        // Camera
+        // Camera Permission
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[]{
-                    Manifest.permission.CAMERA}, PERMISSION_CODE_CAMERA);
+            permissionsNeeded.add(Manifest.permission.CAMERA);
+        }
+
+        AlarmManager alarmManager = getSystemService(AlarmManager.class);
+        if (alarmManager != null && !alarmManager.canScheduleExactAlarms()) {
+            Intent intent = new Intent();
+            intent.setAction(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM);
+            intent.putExtra(Settings.EXTRA_APP_PACKAGE, getPackageName());
+            startActivity(intent);
+        }
+
+        // Notification Permission
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (!NotificationManagerCompat.from(this).areNotificationsEnabled()) {
+                Intent intent = new Intent();
+                intent.setAction(Settings.ACTION_APP_NOTIFICATION_SETTINGS);
+                intent.putExtra(Settings.EXTRA_APP_PACKAGE, getPackageName());
+                startActivity(intent);
+            }
+        }
+
+
+        // Request all perms
+        if (!permissionsNeeded.isEmpty()) {
+            ActivityCompat.requestPermissions(this, permissionsNeeded.toArray(new String[0]), PERMISSION_CODE);
         }
     }
+
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -233,6 +271,21 @@ public class MainActivity extends AppCompatActivity {
             byte[] byteArray = byteArrayOutputStream.toByteArray();
             String imageBase64 = Base64.encodeToString(byteArray, Base64.DEFAULT);
             onImageReceived(imageBase64);
+        }
+    }
+
+    private void createNotificationChannel() {
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            CharSequence name = "Daily Reminders";
+            String description = "Channel for daily reminders";
+            int importance = NotificationManager.IMPORTANCE_DEFAULT;
+            NotificationChannel channel = new NotificationChannel(Constants.NOTIFICATION_CHANNEL_ID, name, importance);
+            channel.setDescription(description);
+
+            NotificationManager notificationManager = getSystemService(NotificationManager.class);
+            if(notificationManager != null) {
+                notificationManager.createNotificationChannel(channel);
+            }
         }
     }
 }
