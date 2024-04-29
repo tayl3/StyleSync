@@ -10,6 +10,7 @@ import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
@@ -97,6 +98,18 @@ public class MainActivity extends AppCompatActivity {
         volleyRequestQueue = Volley.newRequestQueue(this);
 
         sharedViewModel = new ViewModelProvider(this).get(SharedViewModel.class);
+
+        sharedViewModel.getIsLoading().observe(this, isLoading -> {
+            navView.setOnItemSelectedListener(item -> {
+                if (!isLoading) {
+                    NavigationUI.onNavDestinationSelected(item, navController);
+                    return true;
+                } else {
+                    // Navigation is disabled, do not navigate
+                    return false;
+                }
+            });
+        });
     }
 
     public void generatePlan(View view) {
@@ -120,9 +133,10 @@ public class MainActivity extends AppCompatActivity {
                         sharedViewModel.setViewPagerItems(viewPagerItems);
                     }
                     sharedViewModel.setLoading(false);
-                    hidePlanText();
                     generatingPlan = false;
                 });
+
+                hidePlanText();
             }
 
             @Override
@@ -158,7 +172,7 @@ public class MainActivity extends AppCompatActivity {
                     public void onStringReceived(String string) {
                         detectingImage = false;
 
-                        setPlanText("Clothing Item Detected:\n" + string);
+//                        setPlanText("Clothing Item Detected:\n" + string);
 
                         Type listType = new TypeToken<List<UserData.Cloth>>() {}.getType();
                         List<UserData.Cloth> list = new Gson().fromJson(string, listType);
@@ -166,6 +180,7 @@ public class MainActivity extends AppCompatActivity {
 
                         userService.getUserData().getClothes().addAll(list);
                         userService.saveUserData();
+//                        Toast.makeText(MainActivity.this, "Detected item and added to your wardrobe!", Toast.LENGTH_SHORT).show();
                     }
 
                     @Override
@@ -192,6 +207,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void hidePlanText() {
+        Log.d("Hide", "Inside hide");
         runOnUiThread(() -> {
             TextView textView = findViewById(R.id.text_home);
             textView.setVisibility(View.GONE);

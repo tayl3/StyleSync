@@ -11,6 +11,8 @@ import com.bumptech.glide.Glide;
 
 import java.util.List;
 
+import dev.stylesync.stylesync.R;
+
 public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> {
 
     private List<String> imageUrls;
@@ -36,6 +38,7 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> 
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Glide.with(holder.imageView.getContext())
                 .load(imageUrls.get(position))
+                .error(R.drawable.baseline_10k_24)
                 .into(holder.imageView);
     }
 

@@ -54,7 +54,7 @@ public class PlanData implements Data {
     private static List<String> getUrlsForPlannedClothes(String[] plannedClothes, List<UserData.Cloth> userClothes) {
         List<String> urls = Arrays.stream(plannedClothes)
                 .map(plannedCloth -> userClothes.stream()
-                        .filter(cloth -> cloth.getDescription().equals(plannedCloth))
+                        .filter(cloth -> cloth.getDescription().equalsIgnoreCase(plannedCloth))
                         .findFirst()
                         .map(UserData.Cloth::getUrl)
                         .orElse(null))

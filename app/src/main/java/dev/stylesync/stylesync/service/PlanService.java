@@ -73,6 +73,9 @@ public class PlanService implements Service {
                 + "If celebrity is \"None\", do not use the celebrity in the plan. Otherwise, use what the celebrity wears as style inspiration" +
                 " User preference adds some weight to the plan but is not required. Make sure to generate a comprehensive plan "
                 + "that is suitable to go outside: {\"plan1\":[],\"plan2\":[],\"plan3\":[]}"
-                + " DO NOT HAVE EXTRA TEXT ASIDE FROM THE JSON OUTPUT, INCLUDING NEW LINES";
+                + " DO NOT HAVE EXTRA TEXT ASIDE FROM THE JSON OUTPUT, INCLUDING NEW LINES, "
+                + "ONLY LIST THE ITEMS WITHOUT ANY ADDITIONAL EXPLANATIONS OR SUGGESTIONS, "
+                + "SUGGEST SOMETHING THAT IS FEASIBLE TO GO OUTSIDE, LEAVING NO BODY PART UNCLOTHED, "
+                + " REMEMBER, ONLY CLOTHES SHOULD BE IN THE FINAL PLANS, NOT SCHEDULES OR FAVORITE COLORS";
     }
 }
