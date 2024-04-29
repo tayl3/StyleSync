@@ -37,6 +37,7 @@ import com.firebase.ui.auth.FirebaseAuthUIActivityResultContract;
 import com.firebase.ui.auth.IdpResponse;
 import com.firebase.ui.auth.data.model.FirebaseAuthUIAuthenticationResult;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.material.switchmaterial.SwitchMaterial;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
@@ -66,6 +67,7 @@ public class SettingsFragment extends Fragment {
     private Button selectActivitiesButton;
     private Button selectCelebrityButton;
     private TimePicker timePicker;
+    private SwitchMaterial toggleNotifications;
     private UserData userData;
     private Database db;
     private UserService userService;
@@ -107,6 +109,7 @@ public class SettingsFragment extends Fragment {
         selectActivitiesButton = root.findViewById(R.id.select_activities_button);
         selectCelebrityButton = root.findViewById(R.id.select_celebrity_button);
         timePicker = root.findViewById(R.id.time_picker);
+        toggleNotifications = root.findViewById(R.id.toggle_notifications);
 
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
@@ -273,7 +276,18 @@ public class SettingsFragment extends Fragment {
         });
 
         timePicker.setOnTimeChangedListener((view, hourOfDay, minute) -> {
+            cancelAlarm();
             setDailyNotification(hourOfDay, minute);
+        });
+        timePicker.setEnabled(false);
+
+        toggleNotifications.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if(isChecked) {
+                timePicker.setEnabled(true);
+            } else {
+                timePicker.setEnabled(false);
+                cancelAlarm();
+            }
         });
 
         return root;
@@ -450,11 +464,25 @@ public class SettingsFragment extends Fragment {
         }
 
         if(alarmManager != null && alarmManager.canScheduleExactAlarms()) {
-            alarmManager.setExact(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), alarmIntent);
-//            alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), AlarmManager.INTERVAL_DAY, alarmIntent);
+            alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), alarmIntent);
             System.out.println("Alarm scheduled for hour: " + hour + ", Minute: " + minute);
             Toast.makeText(getContext(), "Alarm set for " + hour + ":" + minute, Toast.LENGTH_SHORT).show();
         }
     }
+
+    private void cancelAlarm() {
+        AlarmManager alarmManager = (AlarmManager) getActivity().getSystemService(Context.ALARM_SERVICE);
+        Intent intent = new Intent(getContext(), AlarmReceiver.class);
+        PendingIntent alarmIntent = PendingIntent.getBroadcast(getContext(), 0, intent, PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_NO_CREATE);
+
+        if (alarmIntent != null && alarmManager != null) {
+            alarmManager.cancel(alarmIntent);
+            alarmIntent.cancel();
+            System.out.println("Alarm cancelled");
+            Toast.makeText(getContext(), "Alarm cancelled", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+
 
 }
