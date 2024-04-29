@@ -44,6 +44,7 @@ public class PlanData implements Data {
     public static List<ViewPagerItem> convertPlanDataToViewPagerItems(PlanData planData, List<UserData.Cloth> clothes) {
         String[][] planDataItems = { planData.getPlan1(), planData.getPlan2(), planData.getPlan3() };
         return IntStream.range(0, planDataItems.length)
+                .filter(i -> planDataItems[i] != null && planDataItems[i].length > 0)
                 .mapToObj(i ->
                         new ViewPagerItem(getUrlsForPlannedClothes(planDataItems[i], clothes),
                                 "Plan " + (i + 1),

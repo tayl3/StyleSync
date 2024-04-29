@@ -180,7 +180,8 @@ public class MainActivity extends AppCompatActivity {
 
                         userService.getUserData().getClothes().addAll(list);
                         userService.saveUserData();
-//                        Toast.makeText(MainActivity.this, "Detected item and added to your wardrobe!", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(MainActivity.this, "Detected item and added to your wardrobe!", Toast.LENGTH_SHORT).show();
+                        setPlanText("Please Generate a Plan");
                     }
 
                     @Override
