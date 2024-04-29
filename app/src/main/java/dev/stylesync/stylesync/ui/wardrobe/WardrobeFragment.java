@@ -1,8 +1,12 @@
 package dev.stylesync.stylesync.ui.wardrobe;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -56,6 +60,18 @@ public class WardrobeFragment extends Fragment {
         addClothesButton = root.findViewById(R.id.add_clothes_button);
         emptyView = root.findViewById(R.id.empty_wardrobe_view_text);
 
+        ActivityResultLauncher<Intent> itemActivityResultLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                result -> {
+                    if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null) {
+                        boolean delete = result.getData().getBooleanExtra("delete", false);
+                        int position = result.getData().getIntExtra("position", -1);
+                        if(delete){
+                            userService.removeClothingItem(position);
+                        }
+                    }
+                });
+
         userService.getClothesLiveData().observe(getViewLifecycleOwner(), clothes -> {
             if(adapter == null) {
                 adapter = new WardrobeItemAdapter(clothes, position -> {
@@ -64,7 +80,14 @@ public class WardrobeFragment extends Fragment {
                     } else {
                         showEmptyView(false);
                     }
-                    userService.removeClothingItem(position);
+
+                    Intent intent = new Intent(getActivity(), WardrobeItemActivity.class);
+                    intent.putExtra("description", clothes.get(position).getDescription());
+                    intent.putExtra("url", clothes.get(position).getUrl());
+                    intent.putExtra("position", position);
+
+                    itemActivityResultLauncher.launch(intent);
+
                     if(clothes.isEmpty()) {
                         adapter.notifyDataSetChanged();
                     }

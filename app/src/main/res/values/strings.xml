@@ -3,6 +3,8 @@
     <string name="title_home">Home</string>
     <string name="title_wardrobe">Wardrobe</string>
     <string name="title_settings">Settings</string>
+    <string name="wardrobe_item_close">Close</string>
+    <string name="wardrobe_item_details">Details</string>
     <string name="wardrobe_delete_item">Delete</string>
     <string name="empty_wardrobe_text">Your wardrobe is empty!</string>
     <!-- TODO: Remove or change this placeholder text -->
