@@ -2,7 +2,11 @@ package dev.stylesync.stylesync.ui.settings;
 
 import static android.app.Activity.RESULT_OK;
 
+import android.app.AlarmManager;
 import android.app.AlertDialog;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -14,11 +18,14 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.TimePicker;
+import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.app.NotificationCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
@@ -30,11 +37,14 @@ import com.firebase.ui.auth.FirebaseAuthUIActivityResultContract;
 import com.firebase.ui.auth.IdpResponse;
 import com.firebase.ui.auth.data.model.FirebaseAuthUIAuthenticationResult;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.material.switchmaterial.SwitchMaterial;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import dev.stylesync.stylesync.MainActivity;
@@ -42,6 +52,8 @@ import dev.stylesync.stylesync.R;
 import dev.stylesync.stylesync.databinding.FragmentSettingsBinding;
 import dev.stylesync.stylesync.data.UserData;
 import dev.stylesync.stylesync.service.UserService;
+import dev.stylesync.stylesync.utility.AlarmReceiver;
+import dev.stylesync.stylesync.utility.Constants;
 import dev.stylesync.stylesync.utility.Database;
 
 
@@ -54,10 +66,11 @@ public class SettingsFragment extends Fragment {
     private Button selectColorsButton;
     private Button selectActivitiesButton;
     private Button selectCelebrityButton;
+    private TimePicker timePicker;
+    private SwitchMaterial toggleNotifications;
     private UserData userData;
     private Database db;
     private UserService userService;
-
 
     // See: https://developer.android.com/training/basics/intents/result
     private final ActivityResultLauncher<Intent> signInLauncher = registerForActivityResult(
@@ -95,6 +108,8 @@ public class SettingsFragment extends Fragment {
 
         selectActivitiesButton = root.findViewById(R.id.select_activities_button);
         selectCelebrityButton = root.findViewById(R.id.select_celebrity_button);
+        timePicker = root.findViewById(R.id.time_picker);
+        toggleNotifications = root.findViewById(R.id.toggle_notifications);
 
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
@@ -260,6 +275,21 @@ public class SettingsFragment extends Fragment {
             }
         });
 
+        timePicker.setOnTimeChangedListener((view, hourOfDay, minute) -> {
+            cancelAlarm();
+            setDailyNotification(hourOfDay, minute);
+        });
+        timePicker.setEnabled(false);
+
+        toggleNotifications.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if(isChecked) {
+                timePicker.setEnabled(true);
+            } else {
+                timePicker.setEnabled(false);
+                cancelAlarm();
+            }
+        });
+
         return root;
     }
 
@@ -418,4 +448,41 @@ public class SettingsFragment extends Fragment {
             }
         });
     }
+
+    private void setDailyNotification(int hour, int minute) {
+        AlarmManager alarmManager = (AlarmManager) getActivity().getSystemService(Context.ALARM_SERVICE);
+        Intent intent = new Intent(getContext(), AlarmReceiver.class);
+        PendingIntent alarmIntent = PendingIntent.getBroadcast(getContext(), 0, intent, PendingIntent.FLAG_IMMUTABLE);
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.HOUR_OF_DAY, hour);
+        calendar.set(Calendar.MINUTE, minute);
+        calendar.set(Calendar.SECOND, 0);
+
+        if(calendar.getTime().compareTo(new Date()) < 0) {
+            calendar.add(Calendar.DAY_OF_MONTH, 1);
+        }
+
+        if(alarmManager != null && alarmManager.canScheduleExactAlarms()) {
+            alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), alarmIntent);
+            System.out.println("Alarm scheduled for hour: " + hour + ", Minute: " + minute);
+            Toast.makeText(getContext(), "Alarm set for " + hour + ":" + minute, Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void cancelAlarm() {
+        AlarmManager alarmManager = (AlarmManager) getActivity().getSystemService(Context.ALARM_SERVICE);
+        Intent intent = new Intent(getContext(), AlarmReceiver.class);
+        PendingIntent alarmIntent = PendingIntent.getBroadcast(getContext(), 0, intent, PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_NO_CREATE);
+
+        if (alarmIntent != null && alarmManager != null) {
+            alarmManager.cancel(alarmIntent);
+            alarmIntent.cancel();
+            System.out.println("Alarm cancelled");
+            Toast.makeText(getContext(), "Alarm cancelled", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+
+
 }
