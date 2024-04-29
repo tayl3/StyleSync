@@ -17,6 +17,6 @@
         android:id="@+id/delete_wardrobe_item_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/wardrobe_delete_item" />
+        android:text="@string/wardrobe_item_details" />
 
 </LinearLayout>
