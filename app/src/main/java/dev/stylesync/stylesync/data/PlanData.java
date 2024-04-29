@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import dev.stylesync.stylesync.R;
+import dev.stylesync.stylesync.service.UserService;
 import dev.stylesync.stylesync.ui.home.viewpager.ViewPagerItem;
 
 public class PlanData implements Data {
@@ -40,13 +41,26 @@ public class PlanData implements Data {
                 '}';
     }
 
-    public static List<ViewPagerItem> convertPlanDataToViewPagerItems(PlanData planData) {
+    public static List<ViewPagerItem> convertPlanDataToViewPagerItems(PlanData planData, List<UserData.Cloth> clothes) {
         String[][] planDataItems = { planData.getPlan1(), planData.getPlan2(), planData.getPlan3() };
         return IntStream.range(0, planDataItems.length)
+                .filter(i -> planDataItems[i] != null && planDataItems[i].length > 0)
                 .mapToObj(i ->
-                        new ViewPagerItem(R.drawable.baseline_10k_24,
+                        new ViewPagerItem(getUrlsForPlannedClothes(planDataItems[i], clothes),
                                 "Plan " + (i + 1),
                                 Arrays.toString(planDataItems[i])))
                 .collect(Collectors.toList());
+    }
+
+    private static List<String> getUrlsForPlannedClothes(String[] plannedClothes, List<UserData.Cloth> userClothes) {
+        List<String> urls = Arrays.stream(plannedClothes)
+                .map(plannedCloth -> userClothes.stream()
+                        .filter(cloth -> cloth.getDescription().equalsIgnoreCase(plannedCloth))
+                        .findFirst()
+                        .map(UserData.Cloth::getUrl)
+                        .orElse(null))
+                .collect(Collectors.toList());
+
+        return urls;
     }
 }
