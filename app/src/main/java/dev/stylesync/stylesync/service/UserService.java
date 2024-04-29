@@ -9,34 +9,29 @@ import androidx.lifecycle.MutableLiveData;
 import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import dev.stylesync.stylesync.MainActivity;
-import dev.stylesync.stylesync.data.ListType;
 import dev.stylesync.stylesync.data.UserData;
-import dev.stylesync.stylesync.ui.settings.SettingsViewModel;
 import dev.stylesync.stylesync.utility.Database;
 
 public class UserService implements Service {
-    private final Database database;
-    private UserData userData;
-    private final MainActivity context;
-
-    private MutableLiveData<List<UserData.Cloth>> clothesLiveData = new MutableLiveData<>();
-
     private static UserService user_instance = null;
+    private final Database database;
+    private final MainActivity context;
+    private UserData userData;
+    private final MutableLiveData<List<UserData.Cloth>> clothesLiveData = new MutableLiveData<>();
+
+    public UserService(MainActivity context) {
+        this.context = context;
+        this.database = context.database;
+        initUserData();
+    }
 
     public static synchronized UserService getInstance(MainActivity context) {
         if (user_instance == null) {
             user_instance = new UserService(context);
         }
         return user_instance;
-    }
-
-    public UserService(MainActivity context) {
-        this.context = context;
-        this.database = context.database;
-        initUserData();
     }
 
     public void initUserData() {
@@ -53,7 +48,7 @@ public class UserService implements Service {
             this.userData = database.getUserData(deviceId);
             clothesLiveData.postValue(userData.getClothes());
             Log.d("deviceID", deviceId);
-            if (this.userData == null){
+            if (this.userData == null) {
                 this.userData = new UserData();
             }
         }
@@ -70,7 +65,7 @@ public class UserService implements Service {
 
     public void addClothingItem(UserData.Cloth cloth) {
         List<UserData.Cloth> clothes = userData.getClothes();
-        if(clothes != null) {
+        if (clothes != null) {
             clothes.add(cloth);
             System.out.println("Clothes descriptions: " + userData.getClothesDescriptions().toString());
             clothesLiveData.setValue(userData.getClothes());
@@ -80,14 +75,14 @@ public class UserService implements Service {
 
     public void removeClothingItem(int index) {
         List<UserData.Cloth> clothes = userData.getClothes();
-        if(clothes != null && index >= 0 && index < clothes.size()) {
+        if (clothes != null && index >= 0 && index < clothes.size()) {
             clothes.remove(index);
             clothesLiveData.setValue(userData.getClothes());
         }
         database.setUserData(userData);
     }
 
-    public void saveUserData(){
+    public void saveUserData() {
         database.setUserData(userData);
     }
 }

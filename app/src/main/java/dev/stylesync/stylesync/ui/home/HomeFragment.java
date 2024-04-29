@@ -12,8 +12,8 @@ import androidx.viewpager2.widget.ViewPager2;
 
 import dev.stylesync.stylesync.R;
 import dev.stylesync.stylesync.databinding.FragmentHomeBinding;
-import dev.stylesync.stylesync.ui.home.viewpager.ViewPagerAdapter;
 import dev.stylesync.stylesync.ui.home.viewpager.SharedViewModel;
+import dev.stylesync.stylesync.ui.home.viewpager.ViewPagerAdapter;
 
 public class HomeFragment extends Fragment {
 
@@ -34,7 +34,7 @@ public class HomeFragment extends Fragment {
                 viewPager2.setVisibility(View.GONE);
             } else {
                 sharedViewModel.getViewPagerItems().observe(getViewLifecycleOwner(), items -> {
-                    if(items != null && !items.isEmpty()) {
+                    if (items != null && !items.isEmpty()) {
                         ViewPagerAdapter viewPagerAdapter = new ViewPagerAdapter(items);
                         viewPager2.setAdapter(viewPagerAdapter);
                         viewPager2.setVisibility(View.VISIBLE);

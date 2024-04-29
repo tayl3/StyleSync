@@ -20,6 +20,20 @@ public class PlanService implements Service {
         this.context = context;
     }
 
+    // Helper method to create prompt
+    private static String makePrompt(String json) {
+        return "Please generate an output JSON file with the following input: " + json
+                + " Fill out the following output with recommended outfit plans based on the weather conditions, "
+                + "favorite colors, schedules, celebrity and available clothes. The arrays should contain only string literals that are clothing items "
+                + "If celebrity is \"None\", do not use the celebrity in the plan. Otherwise, use what the celebrity wears as style inspiration" +
+                " User preference adds some weight to the plan but is not required. Make sure to generate a comprehensive plan "
+                + "that is suitable to go outside: {\"plan1\":[],\"plan2\":[],\"plan3\":[]}"
+                + " DO NOT HAVE EXTRA TEXT ASIDE FROM THE JSON OUTPUT, INCLUDING NEW LINES, "
+                + "ONLY LIST THE ITEMS WITHOUT ANY ADDITIONAL EXPLANATIONS OR SUGGESTIONS, "
+                + "SUGGEST SOMETHING THAT IS FEASIBLE TO GO OUTSIDE, "
+                + " REMEMBER, ONLY CLOTHES SHOULD BE IN THE FINAL PLANS, NOT SCHEDULES OR FAVORITE COLORS";
+    }
+
     // Method to generate plan asynchronously
     public void generatePlan(DataCallback callback) {
         PromptData promptData = new PromptData();
@@ -63,19 +77,5 @@ public class PlanService implements Service {
                 callback.onError("Failed to retrieve weather data: " + message);
             }
         });
-    }
-
-    // Helper method to create prompt
-    private static String makePrompt(String json) {
-        return "Please generate an output JSON file with the following input: " + json
-                + " Fill out the following output with recommended outfit plans based on the weather conditions, "
-                + "favorite colors, schedules, celebrity and available clothes. The arrays should contain only string literals that are clothing items "
-                + "If celebrity is \"None\", do not use the celebrity in the plan. Otherwise, use what the celebrity wears as style inspiration" +
-                " User preference adds some weight to the plan but is not required. Make sure to generate a comprehensive plan "
-                + "that is suitable to go outside: {\"plan1\":[],\"plan2\":[],\"plan3\":[]}"
-                + " DO NOT HAVE EXTRA TEXT ASIDE FROM THE JSON OUTPUT, INCLUDING NEW LINES, "
-                + "ONLY LIST THE ITEMS WITHOUT ANY ADDITIONAL EXPLANATIONS OR SUGGESTIONS, "
-                + "SUGGEST SOMETHING THAT IS FEASIBLE TO GO OUTSIDE, "
-                + " REMEMBER, ONLY CLOTHES SHOULD BE IN THE FINAL PLANS, NOT SCHEDULES OR FAVORITE COLORS";
     }
 }

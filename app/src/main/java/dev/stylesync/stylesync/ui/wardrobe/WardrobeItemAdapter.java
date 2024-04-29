@@ -16,15 +16,11 @@ import dev.stylesync.stylesync.data.UserData;
 
 public class WardrobeItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
-    private List<UserData.Cloth> items;
-    private OnItemClickListener listener;
     private static final int VIEW_TYPE_ITEM = 0;
     private static final int VIEW_TYPE_EMPTY = 1;
+    private final List<UserData.Cloth> items;
+    private final OnItemClickListener listener;
     private List<UserData.Cloth> clothes;
-
-    public interface OnItemClickListener {
-        void onDeleteClick(int position);
-    }
 
     public WardrobeItemAdapter(List<UserData.Cloth> items, OnItemClickListener listener) {
         this.items = items;
@@ -68,6 +64,10 @@ public class WardrobeItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     @Override
     public int getItemCount() {
         return items.isEmpty() ? 1 : items.size();
+    }
+
+    public interface OnItemClickListener {
+        void onDeleteClick(int position);
     }
 
     public static class ItemViewHolder extends RecyclerView.ViewHolder {

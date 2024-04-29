@@ -30,6 +30,22 @@ public class ImageService implements Service {
         this.context = context;
     }
 
+    private static String makePrompt(String url) {
+        return "Provide a detailed description and proper tagging of all clothing, accessory, or other wearing items in this image and fill the following JSON template, including its color, style, pattern, shape, text, and any distinctive features present. The description should contain a few qualifiers and the type of the item. The description should not be a list of keywords and avoid using commas or other separators. Identify specific brand and model in the description if possible. The length of the description should be no more than 10 words. DO NOT HAVE EXTRA TEXT BESIDES THE JSON FILE, ONLY LIST THE ITEMS WITHOUT ANY ADDITIONAL EXPLANATIONS OR SUGGESTIONS. The original url is: " + url + "\n" +
+                "[\n" +
+                "  {\n" +
+                "    \"description\": \"Description for item 1\",\n" +
+                "    \"tags\": [\"tag1\", \"tag2\", \"tag3\"],\n" +
+                "    \"url\": \"https://original-url-of-item-1\"\n" +
+                "  },\n" +
+                "  {\n" +
+                "    \"description\": \"Description for item 2\",\n" +
+                "    \"tags\": [\"tag1\", \"tag2\", \"tag3\"],\n" +
+                "    \"url\": \"https://original-url-of-item-2\"\n" +
+                "  }\n" +
+                "]";
+    }
+
     public void captureImage() {
         if (ActivityCompat.checkSelfPermission(context, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
             System.err.println("Camera permission not granted");
@@ -72,21 +88,5 @@ public class ImageService implements Service {
                 callback.onError("Failed to identify the image");
             }
         });
-    }
-
-    private static String makePrompt(String url) {
-        return "Provide a detailed description and proper tagging of all clothing, accessory, or other wearing items in this image and fill the following JSON template, including its color, style, pattern, shape, text, and any distinctive features present. The description should contain a few qualifiers and the type of the item. The description should not be a list of keywords and avoid using commas or other separators. Identify specific brand and model in the description if possible. The length of the description should be no more than 10 words. DO NOT HAVE EXTRA TEXT BESIDES THE JSON FILE, ONLY LIST THE ITEMS WITHOUT ANY ADDITIONAL EXPLANATIONS OR SUGGESTIONS. The original url is: " + url + "\n" +
-                "[\n" +
-                "  {\n" +
-                "    \"description\": \"Description for item 1\",\n" +
-                "    \"tags\": [\"tag1\", \"tag2\", \"tag3\"],\n" +
-                "    \"url\": \"https://original-url-of-item-1\"\n" +
-                "  },\n" +
-                "  {\n" +
-                "    \"description\": \"Description for item 2\",\n" +
-                "    \"tags\": [\"tag1\", \"tag2\", \"tag3\"],\n" +
-                "    \"url\": \"https://original-url-of-item-2\"\n" +
-                "  }\n" +
-                "]";
     }
 }

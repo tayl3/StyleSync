@@ -1,20 +1,8 @@
 package dev.stylesync.stylesync.ui.wardrobe;
 
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProvider;
-
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,12 +10,18 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import java.util.ArrayList;
-import java.util.List;
 
 import dev.stylesync.stylesync.MainActivity;
 import dev.stylesync.stylesync.R;
-import dev.stylesync.stylesync.data.ListType;
 import dev.stylesync.stylesync.data.UserData;
 import dev.stylesync.stylesync.databinding.FragmentWardrobeBinding;
 import dev.stylesync.stylesync.service.UserService;
@@ -66,20 +60,16 @@ public class WardrobeFragment extends Fragment {
                     if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null) {
                         boolean delete = result.getData().getBooleanExtra("delete", false);
                         int position = result.getData().getIntExtra("position", -1);
-                        if(delete){
+                        if (delete) {
                             userService.removeClothingItem(position);
                         }
                     }
                 });
 
         userService.getClothesLiveData().observe(getViewLifecycleOwner(), clothes -> {
-            if(adapter == null) {
+            if (adapter == null) {
                 adapter = new WardrobeItemAdapter(clothes, position -> {
-                    if(adapter.getItemCount() == 0) {
-                        showEmptyView(true);
-                    } else {
-                        showEmptyView(false);
-                    }
+                    showEmptyView(adapter.getItemCount() == 0);
 
                     Intent intent = new Intent(getActivity(), WardrobeItemActivity.class);
                     intent.putExtra("description", clothes.get(position).getDescription());
@@ -88,7 +78,7 @@ public class WardrobeFragment extends Fragment {
 
                     itemActivityResultLauncher.launch(intent);
 
-                    if(clothes.isEmpty()) {
+                    if (clothes.isEmpty()) {
                         adapter.notifyDataSetChanged();
                     }
                 });
@@ -102,7 +92,7 @@ public class WardrobeFragment extends Fragment {
 
         addClothesButton.setOnClickListener(v -> {
             String clothingItem = inputClothes.getText().toString().trim();
-            if(!clothingItem.isEmpty()) {
+            if (!clothingItem.isEmpty()) {
                 UserData.Cloth cloth = new UserData.Cloth(clothingItem, "", new ArrayList<>());
                 userService.addClothingItem(cloth);
                 inputClothes.setText("");

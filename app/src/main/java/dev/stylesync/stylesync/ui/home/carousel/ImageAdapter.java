@@ -1,6 +1,5 @@
 package dev.stylesync.stylesync.ui.home.carousel;
 
-import android.content.Context;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
@@ -15,7 +14,7 @@ import dev.stylesync.stylesync.R;
 
 public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> {
 
-    private List<String> imageUrls;
+    private final List<String> imageUrls;
 
     public ImageAdapter(List<String> imageUrls) {
         this.imageUrls = imageUrls;

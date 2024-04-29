@@ -4,7 +4,6 @@ import static android.app.Activity.RESULT_OK;
 
 import android.app.AlarmManager;
 import android.app.AlertDialog;
-import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -15,7 +14,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.TimePicker;
@@ -25,7 +23,6 @@ import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.app.NotificationCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
@@ -44,16 +41,16 @@ import com.google.firebase.auth.FirebaseUser;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
 import dev.stylesync.stylesync.MainActivity;
 import dev.stylesync.stylesync.R;
-import dev.stylesync.stylesync.databinding.FragmentSettingsBinding;
 import dev.stylesync.stylesync.data.UserData;
+import dev.stylesync.stylesync.databinding.FragmentSettingsBinding;
 import dev.stylesync.stylesync.service.UserService;
 import dev.stylesync.stylesync.utility.AlarmReceiver;
-import dev.stylesync.stylesync.utility.Constants;
 import dev.stylesync.stylesync.utility.Database;
 
 
@@ -93,7 +90,7 @@ public class SettingsFragment extends Fragment {
         View root = binding.getRoot();
 
         // Choose authentication providers
-        List<AuthUI.IdpConfig> providers = Arrays.asList(
+        List<AuthUI.IdpConfig> providers = Collections.singletonList(
                 new AuthUI.IdpConfig.GoogleBuilder().build());
 
         signInButton = root.findViewById(R.id.google_sign_in_button);
@@ -282,7 +279,7 @@ public class SettingsFragment extends Fragment {
         timePicker.setEnabled(false);
 
         toggleNotifications.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            if(isChecked) {
+            if (isChecked) {
                 timePicker.setEnabled(true);
             } else {
                 timePicker.setEnabled(false);
@@ -459,11 +456,11 @@ public class SettingsFragment extends Fragment {
         calendar.set(Calendar.MINUTE, minute);
         calendar.set(Calendar.SECOND, 0);
 
-        if(calendar.getTime().compareTo(new Date()) < 0) {
+        if (calendar.getTime().compareTo(new Date()) < 0) {
             calendar.add(Calendar.DAY_OF_MONTH, 1);
         }
 
-        if(alarmManager != null && alarmManager.canScheduleExactAlarms()) {
+        if (alarmManager != null && alarmManager.canScheduleExactAlarms()) {
             alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), alarmIntent);
             System.out.println("Alarm scheduled for hour: " + hour + ", Minute: " + minute);
             Toast.makeText(getContext(), "Alarm set for " + hour + ":" + minute, Toast.LENGTH_SHORT).show();
@@ -482,7 +479,6 @@ public class SettingsFragment extends Fragment {
             Toast.makeText(getContext(), "Alarm cancelled", Toast.LENGTH_SHORT).show();
         }
     }
-
 
 
 }

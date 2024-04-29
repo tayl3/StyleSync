@@ -57,11 +57,11 @@ public class ViewPagerAdapter extends RecyclerView.Adapter<ViewPagerAdapter.View
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
+        static final long AUTO_SCROLL_INTERVAL = 2500;
         ViewPager2 viewPagerImageCarousel;
         TextView tvHeading, tvDesc;
         Handler handler = new Handler(Looper.getMainLooper());
         Runnable autoScrollRunnable;
-        static final long AUTO_SCROLL_INTERVAL = 2500;
 
         public ViewHolder(@NonNull View view) {
             super(view);
@@ -76,9 +76,9 @@ public class ViewPagerAdapter extends RecyclerView.Adapter<ViewPagerAdapter.View
             autoScrollRunnable = new Runnable() {
                 @Override
                 public void run() {
-                    if(viewPagerImageCarousel.getAdapter() != null) {
+                    if (viewPagerImageCarousel.getAdapter() != null) {
                         int numItems = viewPagerImageCarousel.getAdapter().getItemCount();
-                        if(numItems > 0) {
+                        if (numItems > 0) {
                             int currItem = viewPagerImageCarousel.getCurrentItem();
                             currItem = (currItem + 1) % numItems;
                             viewPagerImageCarousel.setCurrentItem(currItem, true);

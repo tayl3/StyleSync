@@ -18,13 +18,13 @@ import dev.stylesync.stylesync.BuildConfig;
 import dev.stylesync.stylesync.data.UserData;
 
 public class Database {
+    private static Database db_instance = null;
     private final String database = "supabase";
     private final String userDataTable = "userdata";
-    private String postgresUrl = BuildConfig.POSTGRES_URL;
+    private final String postgresUrl = BuildConfig.POSTGRES_URL;
     private Connection conn;
     private boolean status;
     private UserData userData;
-    private static Database db_instance = null;
 
     public Database() {
         connect();
@@ -33,7 +33,7 @@ public class Database {
     }
 
     public static synchronized Database getInstance() {
-        if(db_instance == null) {
+        if (db_instance == null) {
             db_instance = new Database();
         }
         return db_instance;
@@ -160,7 +160,7 @@ public class Database {
                     Array colorsArray = rs.getArray("favorite_colors");
                     Array schedulesArray = rs.getArray("schedules");
                     String celebrity = rs.getString("celebrity");
-                  
+
                     if (clothesArray != null) {
                         List<String> clothes = new ArrayList<>(Arrays.asList((String[]) clothesArray.getArray()));
                         userData.setClothesJSON(clothes);
@@ -173,7 +173,7 @@ public class Database {
                         List<String> schedules = new ArrayList<>(Arrays.asList((String[]) schedulesArray.getArray()));
                         userData.getUserPreference().setSchedules(schedules);
                     }
-                    if(celebrity != null) {
+                    if (celebrity != null) {
                         userData.getUserPreference().setCelebrity(celebrity);
                     }
                 } else {

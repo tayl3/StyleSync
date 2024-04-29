@@ -25,6 +25,10 @@ public class UserData implements Data {
         return clothes;
     }
 
+    public void setClothes(List<Cloth> clothes) {
+        this.clothes = clothes;
+    }
+
     public List<String> getClothesJSON() {
         List<String> list = new ArrayList<>();
         for (Cloth cloth : clothes) {
@@ -34,14 +38,6 @@ public class UserData implements Data {
         return list;
     }
 
-    public List<String> getClothesDescriptions() {
-        return clothes.stream().map(UserData.Cloth::getDescription).collect(Collectors.toList());
-    }
-
-    public void setClothes(List<Cloth> clothes) {
-        this.clothes = clothes;
-    }
-
     public void setClothesJSON(List<String> clothes) {
         List<Cloth> list = new ArrayList<>();
         for (String str : clothes) {
@@ -49,6 +45,10 @@ public class UserData implements Data {
             list.add(new Gson().fromJson(str, Cloth.class));
         }
         this.clothes = list;
+    }
+
+    public List<String> getClothesDescriptions() {
+        return clothes.stream().map(UserData.Cloth::getDescription).collect(Collectors.toList());
     }
 
     public UserPreference getUserPreference() {
@@ -104,20 +104,20 @@ public class UserData implements Data {
             return description;
         }
 
-        public String getUrl() {
-            return url;
-        }
-
-        public List<String> getTags() {
-            return tags;
-        }
-
         public void setDescription(String description) {
             this.description = description;
         }
 
+        public String getUrl() {
+            return url;
+        }
+
         public void setUrl(String url) {
             this.url = url;
+        }
+
+        public List<String> getTags() {
+            return tags;
         }
 
         public void setTags(List<String> tags) {

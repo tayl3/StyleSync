@@ -2,7 +2,6 @@ package dev.stylesync.stylesync;
 
 import android.Manifest;
 import android.app.AlarmManager;
-import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Intent;
@@ -25,7 +24,6 @@ import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
-import androidx.viewpager.widget.ViewPager;
 
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.Volley;
@@ -36,45 +34,39 @@ import com.google.gson.Gson;
 import java.io.ByteArrayOutputStream;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import dev.stylesync.stylesync.data.Data;
 import dev.stylesync.stylesync.data.DataCallback;
 import dev.stylesync.stylesync.data.ImgBBData;
-import dev.stylesync.stylesync.data.UserData;
-import dev.stylesync.stylesync.service.ImageService;
 import dev.stylesync.stylesync.data.PlanData;
 import dev.stylesync.stylesync.data.StringCallback;
+import dev.stylesync.stylesync.data.UserData;
 import dev.stylesync.stylesync.databinding.ActivityMainBinding;
 import dev.stylesync.stylesync.service.ImageService;
 import dev.stylesync.stylesync.service.PlanService;
 import dev.stylesync.stylesync.service.UserService;
 import dev.stylesync.stylesync.service.WeatherService;
-import dev.stylesync.stylesync.ui.home.viewpager.ViewPagerItem;
 import dev.stylesync.stylesync.ui.home.viewpager.SharedViewModel;
+import dev.stylesync.stylesync.ui.home.viewpager.ViewPagerItem;
 import dev.stylesync.stylesync.utility.Constants;
 import dev.stylesync.stylesync.utility.Database;
 
 public class MainActivity extends AppCompatActivity {
-    private ActivityMainBinding binding;
-
+    public static final int REQUEST_CODE_CAPTURE_IMAGE = 1;
+    public static final int PERMISSION_CODE = 2;
     // Services
     public PlanService planService;
     public WeatherService weatherService;
     public UserService userService;
     public ImageService imageService;
-
     public SharedViewModel sharedViewModel;
-
     public Database database;
-
     public RequestQueue volleyRequestQueue;
+    private ActivityMainBinding binding;
     // States
     private boolean generatingPlan;
     private boolean detectingImage;
-    public static final int REQUEST_CODE_CAPTURE_IMAGE = 1;
-    public static final int PERMISSION_CODE = 2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -139,7 +131,7 @@ public class MainActivity extends AppCompatActivity {
                 PlanData planData = (PlanData) data;
 
                 userService.getClothesLiveData().observe(MainActivity.this, cloths -> {
-                    if(cloths != null) {
+                    if (cloths != null) {
                         List<ViewPagerItem> viewPagerItems = PlanData.convertPlanDataToViewPagerItems(planData, cloths);
                         sharedViewModel.setViewPagerItems(viewPagerItems);
                     }
@@ -185,7 +177,8 @@ public class MainActivity extends AppCompatActivity {
 
 //                        setPlanText("Clothing Item Detected:\n" + string);
 
-                        Type listType = new TypeToken<List<UserData.Cloth>>() {}.getType();
+                        Type listType = new TypeToken<List<UserData.Cloth>>() {
+                        }.getType();
                         List<UserData.Cloth> list = new Gson().fromJson(string, listType);
 
 
@@ -296,7 +289,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void createNotificationChannel() {
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             CharSequence name = "Daily Reminders";
             String description = "Channel for daily reminders";
             int importance = NotificationManager.IMPORTANCE_DEFAULT;
@@ -304,7 +297,7 @@ public class MainActivity extends AppCompatActivity {
             channel.setDescription(description);
 
             NotificationManager notificationManager = getSystemService(NotificationManager.class);
-            if(notificationManager != null) {
+            if (notificationManager != null) {
                 notificationManager.createNotificationChannel(channel);
             }
         }

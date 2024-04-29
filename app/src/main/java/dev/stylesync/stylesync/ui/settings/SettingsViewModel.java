@@ -24,19 +24,19 @@ public class SettingsViewModel extends ViewModel {
         return mUsername;
     }
 
-    public LiveData<String> getUserId() {
-        return mUserId;
-    }
-
-    public void setAuthenticated(boolean isAuthenticated) {
-        mIsAuthenticated.setValue(isAuthenticated);
-    }
-
     public void setUsername(String username) {
         mUsername.setValue(username);
     }
 
+    public LiveData<String> getUserId() {
+        return mUserId;
+    }
+
     public void setUserId(String userId) {
         mUserId.setValue(userId);
+    }
+
+    public void setAuthenticated(boolean isAuthenticated) {
+        mIsAuthenticated.setValue(isAuthenticated);
     }
 }

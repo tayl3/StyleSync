@@ -1,7 +1,6 @@
 package dev.stylesync.stylesync.utility;
 
 import android.app.AlarmManager;
-import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
@@ -38,7 +37,7 @@ public class AlarmReceiver extends BroadcastReceiver {
                 .setContentIntent(contentIntent)
                 .setAutoCancel(true);
 
-        if(notificationManager != null) {
+        if (notificationManager != null) {
             notificationManager.notify(1, builder.build());
             System.out.println("Notification posted");
         }
