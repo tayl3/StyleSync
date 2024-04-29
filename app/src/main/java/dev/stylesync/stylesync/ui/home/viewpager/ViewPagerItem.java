@@ -1,23 +1,25 @@
 package dev.stylesync.stylesync.ui.home.viewpager;
 
+import java.util.List;
+
 public class ViewPagerItem {
 
-    private int imageId;
+    private List<String> imageUrls;
     private String heading;
     private String description;
 
-    public ViewPagerItem(int imageId, String heading, String description) {
-        this.imageId = imageId;
+    public ViewPagerItem(List<String> imageUrls, String heading, String description) {
+        this.imageUrls = imageUrls;
         this.heading = heading;
         this.description = description;
     }
 
-    public int getImageId() {
-        return imageId;
+    public List<String> getImageUrls() {
+        return imageUrls;
     }
 
-    public void setImageId(int imageId) {
-        this.imageId = imageId;
+    public void setImageUrls(List<String> imageUrls) {
+        this.imageUrls = imageUrls;
     }
 
     public String getHeading() {
